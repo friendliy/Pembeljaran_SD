@@ -41,33 +41,43 @@
       </section>
 
       <section id="worksheet-card">
-        <form id="worksheetForm" class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
-          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px">
-            <div>
-              <label for="worksheetSubject" class="small">Materi:</label><br>
-              <select id="worksheetSubject" style="margin-top:4px">
-                <option value="math">Matematika</option>
-                <option value="indo">Bahasa Indonesia</option>
-                <option value="sci">IPA</option>
-              </select>
+        <div id="guruWorksheet" style="display:none">
+          <form id="worksheetForm" class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
+            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px">
+              <div>
+                <label for="worksheetSubject" class="small">Materi:</label><br>
+                <select id="worksheetSubject" style="margin-top:4px">
+                  <option value="math">Matematika</option>
+                  <option value="indo">Bahasa Indonesia</option>
+                  <option value="sci">IPA</option>
+                </select>
+              </div>
+              <div>
+                <label for="worksheetType" class="small">Tipe:</label><br>
+                <select id="worksheetType" style="margin-top:4px">
+                  <option value="penjumlahan">Penjumlahan</option>
+                  <option value="pengurangan">Pengurangan</option>
+                  <option value="bacaan">Pemahaman Bacaan</option>
+                  <option value="kata">Kata & Sinonim</option>
+                  <option value="ipa">Makhluk Hidup</option>
+                </select>
+              </div>
             </div>
-            <div>
-              <label for="worksheetType" class="small">Tipe:</label><br>
-              <select id="worksheetType" style="margin-top:4px">
-                <option value="penjumlahan">Penjumlahan</option>
-                <option value="pengurangan">Pengurangan</option>
-                <option value="bacaan">Pemahaman Bacaan</option>
-                <option value="kata">Kata & Sinonim</option>
-                <option value="ipa">Makhluk Hidup</option>
-              </select>
+            <div style="margin-bottom:10px">
+              <label for="customQuestions" class="small">Soal Custom (opsional, pisahkan dengan baris baru):</label>
+              <textarea id="customQuestions" rows="4" style="width:100%;margin-top:4px" placeholder="Contoh:\n1) 12 + 5 = __\n2) 7 - 3 = __"></textarea>
             </div>
+            <button type="button" id="downloadWorksheet" style="width:100%;margin-top:8px">Unduh Lembar Kerja (.txt)</button>
+            <button type="button" id="saveWorksheet" style="width:100%;margin-top:8px;background:#43a047;color:#fff">Simpan Lembar Kerja untuk Siswa</button>
+          </form>
+        </div>
+        <div id="siswaWorksheet" style="display:none">
+          <div class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
+            <h3>Lembar Latihan dari Guru</h3>
+            <div id="worksheetContent">Belum ada lembar latihan yang diisi guru.</div>
+            <button type="button" id="downloadWorksheetSiswa" style="width:100%;margin-top:8px">Unduh Lembar Latihan (.txt)</button>
           </div>
-          <div style="margin-bottom:10px">
-            <label for="customQuestions" class="small">Soal Custom (opsional, pisahkan dengan baris baru):</label>
-            <textarea id="customQuestions" rows="4" style="width:100%;margin-top:4px" placeholder="Contoh:\n1) 12 + 5 = __\n2) 7 - 3 = __"></textarea>
-          </div>
-          <button type="button" id="downloadWorksheet" style="width:100%;margin-top:8px">Unduh Lembar Kerja (.txt)</button>
-        </form>
+        </div>
       </section>
     </main>
 
@@ -148,6 +158,63 @@
   </main>
 
   <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Redirect jika belum login
+      var user = localStorage.getItem('bs_user');
+      if (!user) {
+        window.location.href = 'register.html';
+        return;
+      }
+      var role = JSON.parse(user).role;
+      var guruArea = document.getElementById('guruWorksheet');
+      var siswaArea = document.getElementById('siswaWorksheet');
+      if (role === 'guru') {
+        if (guruArea) guruArea.style.display = 'block';
+        if (siswaArea) siswaArea.style.display = 'none';
+      } else {
+        if (guruArea) guruArea.style.display = 'none';
+        if (siswaArea) siswaArea.style.display = 'block';
+      }
+
+      // Guru: Simpan worksheet ke localStorage
+      var saveBtn = document.getElementById('saveWorksheet');
+      if (saveBtn) {
+        saveBtn.onclick = function() {
+          var subject = document.getElementById('worksheetSubject').value;
+          var type = document.getElementById('worksheetType').value;
+          var custom = document.getElementById('customQuestions').value;
+          var content = `Materi: ${subject}\nTipe: ${type}\n\n${custom || 'Soal otomatis oleh guru.'}`;
+          localStorage.setItem('worksheet_guru', content);
+          alert('Lembar kerja berhasil disimpan untuk siswa!');
+        };
+      }
+
+      // Siswa: Tampilkan worksheet dari guru
+      var worksheetContent = document.getElementById('worksheetContent');
+      if (worksheetContent) {
+        var saved = localStorage.getItem('worksheet_guru');
+        worksheetContent.textContent = saved ? saved : 'Belum ada lembar latihan yang diisi guru.';
+      }
+
+      // Siswa: Download worksheet dari guru
+      var dwSiswaBtn = document.getElementById('downloadWorksheetSiswa');
+      if (dwSiswaBtn) {
+        dwSiswaBtn.onclick = function() {
+          var saved = localStorage.getItem('worksheet_guru');
+          if (!saved) {
+            alert('Belum ada lembar latihan dari guru.');
+            return;
+          }
+          var blob = new Blob([saved], {type:'text/plain'});
+          var a = document.createElement('a');
+          a.href = URL.createObjectURL(blob);
+          a.download = 'lembar_latihan_guru.txt';
+          a.click();
+        };
+      }
+    });
+  </script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
       // ...existing code...
