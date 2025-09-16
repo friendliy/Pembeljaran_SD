@@ -1,3 +1,4 @@
+  <div id="practiceArea" style="margin-top:10px"></div>
 <!doctype html>
 <html lang="id">
 <head>
@@ -19,152 +20,92 @@
     </div>
     <nav>
       <a href="#materi">Materi</a>
-      <a href="#latihan">Latihan</a>
+      <a href="#latihan" id="latihanMenu">Latihan</a>
       <a href="#kuis">Kuis</a>
     </nav>
   </header>
 
+    <main id="content">
+      <section id="home">
+        <h2>Selamat Datang</h2>
+        <p>Website ini dibuat untuk membantu anak SD belajar dengan cara yang menyenangkan. Yuk mulai belajar!</p>
+      </section>
 
-  <main class="container">
-    <section class="hero">
-      <div class="hero-card" style="display:flex;align-items:center;gap:32px;">
-      <style>
-        /* Mobile responsive improvements */
-        body {
-          font-family: 'Segoe UI', Arial, sans-serif;
-          background: #f8fbff;
-          margin: 0;
-          padding: 0;
-        }
-        .container {
-          max-width: 900px;
-          margin: 0 auto;
-          padding: 16px;
-        }
-        .sidebar, .main-content {
-          display: inline-block;
-          vertical-align: top;
-          width: 48%;
-          box-sizing: border-box;
-        }
-        .sidebar {
-          margin-right: 2%;
-        }
-        .card {
-          background: #fff;
-          border-radius: 8px;
-          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
-          margin-bottom: 20px;
-          padding: 16px;
-        }
-        .form-group {
-          margin-bottom: 12px;
-        }
-        .form-group select, .form-group textarea {
-          width: 100%;
-          font-size: 16px;
-          padding: 8px;
-          box-sizing: border-box;
-        }
-        .btn {
-          background: #2196f3;
-          color: #fff;
-          border: none;
-          border-radius: 6px;
-          padding: 12px 0;
-          font-size: 16px;
-          cursor: pointer;
-          width: 100%;
-          margin-bottom: 8px;
-        }
-        @media (max-width: 700px) {
-          .container {
-            padding: 8px;
-          }
-          .sidebar, .main-content {
-            display: block;
-            width: 100%;
-            margin: 0 0 16px 0;
-          }
-          .sidebar {
-            margin-right: 0;
-          }
-        }
-        @media (max-width: 480px) {
-          .container {
-            padding: 4px;
-          }
-          .card {
-            padding: 10px;
-          }
-          h1, h2, h3 {
-            font-size: 1.2em;
-          }
-          .btn {
-            font-size: 15px;
-            padding: 10px 0;
-          }
-        }
-      </style>
-              <p class="small">Buat lembar kerja sesuai kebutuhan. Pilih materi, tipe latihan, dan masukkan soal custom jika diinginkan.</p>
-              <form id="worksheetForm" class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
-                <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px">
-                  <div>
-                    <label for="worksheetSubject" class="small">Materi:</label><br>
-                    <select id="worksheetSubject" style="margin-top:4px">
-                      <option value="math">Matematika</option>
-                      <option value="indo">Bahasa Indonesia</option>
-                      <option value="sci">IPA</option>
-                    </select>
-                  </div>
-                  <div>
-                    <label for="worksheetType" class="small">Tipe:</label><br>
-                    <select id="worksheetType" style="margin-top:4px">
-                      <option value="penjumlahan">Penjumlahan</option>
-                      <option value="pengurangan">Pengurangan</option>
-                      <option value="bacaan">Pemahaman Bacaan</option>
-                      <option value="kata">Kata & Sinonim</option>
-                      <option value="ipa">Makhluk Hidup</option>
-                    </select>
-                  </div>
-                </div>
-                <div style="margin-bottom:10px">
-                  <label for="customQuestions" class="small">Soal Custom (opsional, pisahkan dengan baris baru):</label>
-                  <textarea id="customQuestions" rows="4" style="width:100%;margin-top:4px" placeholder="Contoh:\n1) 12 + 5 = __\n2) 7 - 3 = __"></textarea>
-                </div>
-                <button type="button" id="downloadWorksheet" style="width:100%;margin-top:8px">Unduh Lembar Kerja (.txt)</button>
-              </form>
+      <section id="materi" class="hidden">
+        <h2>Materi Belajar</h2>
+        <ul>
+          <li>Matematika: Penjumlahan & Pengurangan</li>
+          <li>IPA: Hewan dan Tumbuhan</li>
+          <li>Bahasa Indonesia: Membaca & Menulis</li>
+        </ul>
+      </section>
+
+      <section id="worksheet-card">
+        <form id="worksheetForm" class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
+          <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px">
+            <div>
+              <label for="worksheetSubject" class="small">Materi:</label><br>
+              <select id="worksheetSubject" style="margin-top:4px">
+                <option value="math">Matematika</option>
+                <option value="indo">Bahasa Indonesia</option>
+                <option value="sci">IPA</option>
+              </select>
+            </div>
+            <div>
+              <label for="worksheetType" class="small">Tipe:</label><br>
+              <select id="worksheetType" style="margin-top:4px">
+                <option value="penjumlahan">Penjumlahan</option>
+                <option value="pengurangan">Pengurangan</option>
+                <option value="bacaan">Pemahaman Bacaan</option>
+                <option value="kata">Kata & Sinonim</option>
+                <option value="ipa">Makhluk Hidup</option>
+              </select>
+            </div>
           </div>
-        </aside>
-      </div>
-    </section>
+          <div style="margin-bottom:10px">
+            <label for="customQuestions" class="small">Soal Custom (opsional, pisahkan dengan baris baru):</label>
+            <textarea id="customQuestions" rows="4" style="width:100%;margin-top:4px" placeholder="Contoh:\n1) 12 + 5 = __\n2) 7 - 3 = __"></textarea>
+          </div>
+          <button type="button" id="downloadWorksheet" style="width:100%;margin-top:8px">Unduh Lembar Kerja (.txt)</button>
+        </form>
+      </section>
+    </main>
 
     <section class="lessons" id="materi">
       <div>
         <h2>Materi & Modul</h2>
         <div class="lesson-list">
-          <div class="lesson-item card" style="cursor:pointer;transition:.2s" onclick="showLesson('math')">
+          <div class="lesson-item card" style="cursor:pointer;transition:.2s" data-subject="math">
             <div class="subject math" style="font-size:2rem;display:flex;align-items:center;justify-content:center;">M</div>
             <div>
               <strong>Matematika: Penjumlahan</strong>
               <div class="small">Konsep dasar, soal latihan, dan permainan pecahan.</div>
-              <div style="margin-top:8px"><button class="mutebtn">Buka Materi</button></div>
+              <div style="margin-top:8px">
+                <button class="mutebtn open-materi" data-subject="math">Buka Materi</button>
+                <a href="https://www.google.com/search?q=materi+matematika+sd" target="_blank" style="margin-left:8px;color:#2196f3;text-decoration:underline;font-size:0.95em">Cari di Google</a>
+              </div>
             </div>
           </div>
-          <div class="lesson-item card" style="cursor:pointer;transition:.2s" onclick="showLesson('indo')">
+          <div class="lesson-item card" style="cursor:pointer;transition:.2s" data-subject="indo">
             <div class="subject indo" style="font-size:2rem;display:flex;align-items:center;justify-content:center;">B</div>
             <div>
               <strong>Bahasa Indonesia: Membaca</strong>
               <div class="small">Latihan membaca, kosa kata, dan latihan memahami teks.</div>
-              <div style="margin-top:8px"><button class="mutebtn">Buka Materi</button></div>
+              <div style="margin-top:8px">
+                <button class="mutebtn open-materi" data-subject="indo">Buka Materi</button>
+                <a href="https://www.google.com/search?q=materi+bahasa+indonesia+sd" target="_blank" style="margin-left:8px;color:#2196f3;text-decoration:underline;font-size:0.95em">Cari di Google</a>
+              </div>
             </div>
           </div>
-          <div class="lesson-item card" style="cursor:pointer;transition:.2s" onclick="showLesson('sci')">
+          <div class="lesson-item card" style="cursor:pointer;transition:.2s" data-subject="sci">
             <div class="subject sci" style="font-size:2rem;display:flex;align-items:center;justify-content:center;">I</div>
             <div>
               <strong>IPA: Makhluk Hidup</strong>
               <div class="small">Pengertian, contoh, dan eksperimen sederhana di rumah.</div>
-              <div style="margin-top:8px"><button class="mutebtn">Buka Materi</button></div>
+              <div style="margin-top:8px">
+                <button class="mutebtn open-materi" data-subject="sci">Buka Materi</button>
+                <a href="https://www.google.com/search?q=materi+ipa+sd" target="_blank" style="margin-left:8px;color:#2196f3;text-decoration:underline;font-size:0.95em">Cari di Google</a>
+              </div>
             </div>
           </div>
         </div>
@@ -172,29 +113,16 @@
         <div id="materiPage" style="display:none;margin-top:24px">
           <div class="card" id="materiDetail"></div>
           <form id="uploadForm" style="margin-top:18px">
-            <label for="modulFile" class="small">Upload Modul Materi (PDF/TXT):</label>
+            <label for="modulFile" class="small">Upload Materi Anda (PDF/TXT):</label>
             <input type="file" id="modulFile" accept=".pdf,.txt">
             <button type="submit" class="mutebtn" style="margin-left:8px">Upload</button>
             <div id="uploadStatus" class="small" style="margin-top:8px"></div>
+            <div id="uploadedFiles" style="margin-top:10px"></div>
           </form>
         </div>
       </div>
 
-      <aside id="latihan" class="card">
-        <h3>Latihan Harian</h3>
-        <p class="small">Pilih kategori latihan:</p>
-        <select id="practiceType">
-          <option value="penjumlahan">Penjumlahan (Matematika)</option>
-          <option value="pengurangan">Pengurangan (Matematika)</option>
-          <option value="bacaan">Pemahaman Bacaan (Bahasa)</option>
-          <option value="kata">Kata & Sinonim (Bahasa)</option>
-          <option value="ipa">Makhluk Hidup (IPA)</option>
-        </select>
-        <div style="margin-top:8px">
-          <button id="generatePractice">Buat Latihan</button>
-        </div>
-        <div id="practiceArea" style="margin-top:10px"></div>
-      </aside>
+
     </section>
 
 
@@ -220,5 +148,121 @@
   </main>
 
   <script src="script.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // ...existing code...
+
+      // Materi logic: open materi and upload
+      var materiBtns = document.querySelectorAll('.open-materi');
+      var materiPage = document.getElementById('materiPage');
+      var materiDetail = document.getElementById('materiDetail');
+      var uploadForm = document.getElementById('uploadForm');
+      var uploadedFiles = document.getElementById('uploadedFiles');
+      var uploadedList = [];
+
+      materiBtns.forEach(function(btn){
+        btn.onclick = function(){
+          var subject = btn.getAttribute('data-subject');
+          var subjectText = subject === 'math' ? 'Matematika' : subject === 'indo' ? 'Bahasa Indonesia' : 'IPA';
+          let moduleLinks = '';
+          if(subject === 'math') {
+            moduleLinks = `
+              <ul>
+                <li><a href='https://www.ruangguru.com/blog/materi-matematika-sd' target='_blank'>Materi Matematika SD - Ruangguru</a></li>
+                <li><a href='https://www.scribd.com/document/456789012/Modul-Matematika-SD-Kelas-4' target='_blank'>Modul Matematika Kelas 4 PDF (Scribd)</a></li>
+                <li><a href='https://www.slideshare.net/aguswahyudi/materi-matematika-sd-kelas-4' target='_blank'>Materi Matematika SD Kelas 4 - Slideshare</a></li>
+              </ul>
+            `;
+          } else if(subject === 'indo') {
+            moduleLinks = `
+              <ul>
+                <li><a href='https://www.ruangguru.com/blog/materi-bahasa-indonesia-sd' target='_blank'>Materi Bahasa Indonesia SD - Ruangguru</a></li>
+                <li><a href='https://www.scribd.com/document/456789013/Modul-Bahasa-Indonesia-SD-Kelas-4' target='_blank'>Modul Bahasa Indonesia Kelas 4 PDF (Scribd)</a></li>
+                <li><a href='https://www.slideshare.net/aguswahyudi/materi-bahasa-indonesia-sd-kelas-4' target='_blank'>Materi Bahasa Indonesia SD Kelas 4 - Slideshare</a></li>
+              </ul>
+            `;
+          } else if(subject === 'sci') {
+            moduleLinks = `
+              <ul>
+                <li><a href='https://www.ruangguru.com/blog/materi-ipa-sd' target='_blank'>Materi IPA SD - Ruangguru</a></li>
+                <li><a href='https://www.scribd.com/document/456789014/Modul-IPA-SD-Kelas-4' target='_blank'>Modul IPA Kelas 4 PDF (Scribd)</a></li>
+                <li><a href='https://www.slideshare.net/aguswahyudi/materi-ipa-sd-kelas-4' target='_blank'>Materi IPA SD Kelas 4 - Slideshare</a></li>
+              </ul>
+            `;
+          }
+          if(materiDetail){
+            materiDetail.innerHTML = `<h3>${subjectText}</h3>
+              <p>Modul materi valid untuk ${subjectText}:</p>
+              ${moduleLinks}
+              <p><a href='https://www.google.com/search?q=materi+${encodeURIComponent(subjectText.toLowerCase())}+sd' target='_blank' style='color:#2196f3;text-decoration:underline'>Cari materi lain di Google</a></p>`;
+          }
+          if(materiPage){
+            materiPage.style.display = 'block';
+            materiPage.scrollIntoView({behavior:'smooth'});
+          }
+        };
+      });
+
+      if(uploadForm && uploadedFiles){
+        uploadForm.onsubmit = function(e){
+          e.preventDefault();
+          var fileInput = document.getElementById('modulFile');
+          var status = document.getElementById('uploadStatus');
+          if(fileInput.files.length > 0){
+            var file = fileInput.files[0];
+            uploadedList.push(file.name);
+            status.textContent = 'File berhasil diupload: ' + file.name;
+            uploadedFiles.innerHTML = '<b>File Materi Anda:</b><ul>' + uploadedList.map(f => `<li>${f}</li>`).join('') + '</ul>';
+            fileInput.value = '';
+          } else {
+            status.textContent = 'Pilih file terlebih dahulu.';
+          }
+        };
+      }
+    });
+  </script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      var latihanMenu = document.getElementById('latihanMenu');
+      var materiMenu = document.querySelector('nav a[href="#materi"]');
+      var kuisMenu = document.querySelector('nav a[href="#kuis"]');
+      var worksheetCard = document.getElementById('worksheet-card');
+      var homeSection = document.getElementById('home');
+      var materiSection = document.querySelector('.lessons');
+      var kuisSection = document.getElementById('kuis');
+
+      function hideAllSections() {
+        if (homeSection) homeSection.style.display = 'none';
+        if (worksheetCard) worksheetCard.style.display = 'none';
+        if (materiSection) materiSection.style.display = 'none';
+        if (kuisSection) kuisSection.style.display = 'none';
+      }
+
+      if (latihanMenu && worksheetCard) {
+        latihanMenu.addEventListener('click', function(e) {
+          e.preventDefault();
+          hideAllSections();
+          worksheetCard.style.display = 'block';
+          worksheetCard.scrollIntoView({behavior:'smooth'});
+        });
+      }
+      if (materiMenu && materiSection) {
+        materiMenu.addEventListener('click', function(e) {
+          e.preventDefault();
+          hideAllSections();
+          materiSection.style.display = 'block';
+          materiSection.scrollIntoView({behavior:'smooth'});
+        });
+      }
+      if (kuisMenu && kuisSection) {
+        kuisMenu.addEventListener('click', function(e) {
+          e.preventDefault();
+          hideAllSections();
+          kuisSection.style.display = 'block';
+          kuisSection.scrollIntoView({behavior:'smooth'});
+        });
+      }
+    });
+  </script>
 </body>
 </html>

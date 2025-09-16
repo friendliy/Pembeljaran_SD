@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Login / Register - Belajar Seru SD</title>
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { background: #f8fbff; font-family: 'Segoe UI', Arial, sans-serif; }
+    .auth-container {
+      max-width: 400px;
+      margin: 60px auto;
+      background: #fff;
+      border-radius: 14px;
+      box-shadow: 0 2px 12px rgba(33,150,243,0.10);
+      padding: 32px 24px;
+    }
+    h2 { text-align:center; color:#2196f3; margin-bottom:18px; }
+    label { font-weight:500; margin-bottom:4px; display:block; }
+    input, select {
+      width: 100%;
+      margin-bottom: 16px;
+      padding: 8px;
+      border-radius: 6px;
+      border: 1px solid #cfd8dc;
+      font-size: 1rem;
+    }
+    button {
+      width: 100%;
+      background: #2196f3;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      padding: 12px 0;
+      font-size: 1.1rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+    }
+    .info { text-align:center; color:#666; font-size:0.95rem; margin-bottom:18px; }
+  </style>
+</head>
+<body>
+  <div class="auth-container">
+    <h2>Login / Register</h2>
+    <div class="info">Masuk sebagai Guru untuk membuat soal latihan.<br>Masuk sebagai Siswa untuk mengunduh soal latihan.</div>
+    <form id="authForm">
+      <label for="username">Username:</label>
+      <input type="text" id="username" required>
+      <label for="role">Login sebagai:</label>
+      <select id="role">
+        <option value="guru">Guru</option>
+        <option value="siswa">Siswa</option>
+      </select>
+      <button type="submit">Login / Register</button>
+    </form>
+  </div>
+  <script>
+    document.getElementById('authForm').onsubmit = function(e) {
+      e.preventDefault();
+      var username = document.getElementById('username').value.trim();
+      var role = document.getElementById('role').value;
+      if (username && role) {
+        localStorage.setItem('bs_user', JSON.stringify({username, role}));
+        window.location.href = 'index.html';
+      }
+    };
+  </script>
+</body>
+</html>

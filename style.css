@@ -1,3 +1,178 @@
+/* Worksheet card form improvements */
+#worksheet-card .card {
+  background: #f8f9fa;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(33,150,243,0.08);
+  padding: 28px 22px 22px 22px;
+  margin-bottom: 18px;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+}
+#worksheet-card label {
+  font-weight: 500;
+  color: #333;
+  margin-bottom: 4px;
+  display: block;
+}
+#worksheet-card select, #worksheet-card textarea {
+  border: 1px solid #cfd8dc;
+  border-radius: 6px;
+  padding: 7px 10px;
+  font-size: 1rem;
+  margin-bottom: 10px;
+  width: 100%;
+  box-sizing: border-box;
+}
+#worksheet-card textarea {
+  min-height: 70px;
+  resize: vertical;
+}
+#worksheet-card .form-row {
+  display: flex;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+#worksheet-card .form-row > div {
+  flex: 1;
+}
+#downloadWorksheet {
+  background: #2196f3;
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 14px 0;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  width: 100%;
+  margin-top: 10px;
+  box-shadow: 0 2px 8px rgba(33,150,243,0.08);
+  transition: background 0.2s;
+}
+#downloadWorksheet:hover {
+  background: #1976d2;
+}
+@media (max-width: 700px) {
+  #worksheet-card .card {
+    padding: 16px 6px 14px 6px;
+    max-width: 100%;
+  }
+  #worksheet-card .form-row {
+    flex-direction: column;
+    gap: 8px;
+  }
+}
+/* Main content card style */
+#content {
+  max-width: 900px;
+  margin: 32px auto 0 auto;
+  padding: 0 16px;
+}
+#content section {
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(33,150,243,0.08);
+  margin-bottom: 28px;
+  padding: 32px 24px;
+  transition: box-shadow 0.2s;
+}
+#content h2 {
+  color: #2196f3;
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 12px;
+  letter-spacing: 1px;
+}
+#content p, #content ul {
+  font-size: 1.15rem;
+  color: #444;
+  margin-bottom: 0;
+}
+#content ul {
+  padding-left: 20px;
+  margin-top: 8px;
+}
+#content li {
+  margin-bottom: 6px;
+}
+
+@media (max-width: 700px) {
+  #content {
+    padding: 0 4px;
+  }
+  #content section {
+    padding: 18px 8px;
+    margin-bottom: 18px;
+  }
+  #content h2 {
+    font-size: 1.3rem;
+    margin-bottom: 8px;
+  }
+  #content p, #content ul {
+    font-size: 1rem;
+  }
+}
+.worksheet-section .card:first-child {
+  min-height: 120px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+/* Worksheet section: always show both cards */
+.worksheet-section {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+}
+.worksheet-section .card {
+  flex: 1 1 0;
+  min-width: 280px;
+  box-sizing: border-box;
+  padding: 24px;
+  margin: 0;
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
+@media (max-width: 900px) {
+  .worksheet-section {
+    flex-direction: column;
+    gap: 12px;
+  }
+  .worksheet-section .card {
+    min-width: 0;
+    width: 100%;
+    padding: 16px;
+  }
+}
+/* Responsive: all cards appear stacked and full-width on mobile */
+@media (max-width: 700px) {
+  .card-group {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+  }
+  .card-group .card {
+    width: 100%;
+    margin: 0;
+    box-sizing: border-box;
+    padding: 12px 10px;
+  }
+  .sidebar, .main-content {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    float: none;
+    display: block;
+  }
+}
 /* Clearfix for worksheet-section to ensure both sides show */
 .worksheet-section::after {
   content: "";
