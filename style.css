@@ -1,3 +1,16 @@
+/* Clearfix for worksheet-section to ensure both sides show */
+.worksheet-section::after {
+  content: "";
+  display: table;
+  clear: both;
+}
+
+/* Ensure both cards are always visible */
+.worksheet-section .card {
+  display: block;
+  visibility: visible;
+  opacity: 1;
+}
 /* Sidebar and card spacing for mobile */
 @media (max-width: 700px) {
   .sidebar {
