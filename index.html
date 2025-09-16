@@ -74,6 +74,20 @@
         <div id="siswaWorksheet" style="display:none">
           <div class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
             <h3>Lembar Latihan dari Guru</h3>
+            <label for="siswaSubject">Materi:</label>
+            <select id="siswaSubject" style="margin-bottom:8px">
+              <option value="math">Matematika</option>
+              <option value="indo">Bahasa Indonesia</option>
+              <option value="sci">IPA</option>
+            </select>
+            <label for="siswaType">Tipe:</label>
+            <select id="siswaType" style="margin-bottom:8px">
+              <option value="penjumlahan">Penjumlahan</option>
+              <option value="pengurangan">Pengurangan</option>
+              <option value="bacaan">Pemahaman Bacaan</option>
+              <option value="kata">Kata & Sinonim</option>
+              <option value="ipa">Makhluk Hidup</option>
+            </select>
             <div id="worksheetContent">Belum ada lembar latihan yang diisi guru.</div>
             <button type="button" id="downloadWorksheetSiswa" style="width:100%;margin-top:8px">Unduh Lembar Latihan (.txt)</button>
           </div>
@@ -212,27 +226,28 @@
         };
       }
 
-      // Siswa: Tampilkan worksheet dari Firestore sesuai mapel
-      if (worksheetContent) {
-        function updateSiswaWorksheet() {
-          // Ambil mapel dan tipe default (atau bisa pilih)
-          var subject = 'math';
-          var type = 'penjumlahan';
-          // Jika ingin dinamis, ambil dari dropdown mapel/tipe siswa
-          db.collection("lembar_latihan").doc(subject+"_"+type).get()
-            .then(doc => {
-              worksheetContent.textContent = doc.exists ? doc.data().content : 'Belum ada lembar latihan yang diisi guru.';
-            });
-        }
-        updateSiswaWorksheet();
+      // Siswa: Tampilkan worksheet dari Firestore sesuai mapel/tipe yang dipilih
+      var siswaSubject = document.getElementById('siswaSubject');
+      var siswaType = document.getElementById('siswaType');
+      function updateSiswaWorksheet() {
+        if (!worksheetContent) return;
+        var subject = siswaSubject ? siswaSubject.value : 'math';
+        var type = siswaType ? siswaType.value : 'penjumlahan';
+        db.collection("lembar_latihan").doc(subject+"_"+type).get()
+          .then(doc => {
+            worksheetContent.textContent = doc.exists ? doc.data().content : 'Belum ada lembar latihan yang diisi guru.';
+          });
       }
+      if (siswaSubject) siswaSubject.onchange = updateSiswaWorksheet;
+      if (siswaType) siswaType.onchange = updateSiswaWorksheet;
+      updateSiswaWorksheet();
 
-      // Siswa: Download worksheet dari Firestore
+      // Siswa: Download worksheet dari Firestore sesuai mapel/tipe yang dipilih
       var dwSiswaBtn = document.getElementById('downloadWorksheetSiswa');
       if (dwSiswaBtn) {
         dwSiswaBtn.onclick = function() {
-          var subject = 'math';
-          var type = 'penjumlahan';
+          var subject = siswaSubject ? siswaSubject.value : 'math';
+          var type = siswaType ? siswaType.value : 'penjumlahan';
           db.collection("lembar_latihan").doc(subject+"_"+type).get()
             .then(doc => {
               if (!doc.exists) {
