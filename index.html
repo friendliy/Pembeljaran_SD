@@ -1,9 +1,11 @@
 <!doctype html>
 <html lang="id">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Belajar Seru SD — Portal Materi & Latihan</title>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Belajar Seru SD</title>
+  <link rel="stylesheet" href="style.css">
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
@@ -26,47 +28,84 @@
   <main class="container">
     <section class="hero">
       <div class="hero-card" style="display:flex;align-items:center;gap:32px;">
-        <div style="flex:1">
-          <h1 style="font-size:2.2rem;margin-bottom:8px;display:flex;align-items:center;gap:10px">
-            <span class="subject math" style="width:44px;height:44px;font-size:1.6rem;display:flex;align-items:center;justify-content:center;">B</span> Halo! Selamat Belajar
-          </h1>
-          <p class="small" style="font-size:1.1rem;margin-bottom:18px">Pilih pelajaran, kerjakan latihan, dan cek nilai secara langsung.<br>Dirancang untuk siswa SD (kelas 1 — 6).</p>
-          <div class="grid">
-            <div class="card" style="transition:.2s;cursor:pointer" onclick="document.getElementById('materi').scrollIntoView({behavior:'smooth'})">
-              <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.3em">📚</span> Pelajaran Populer</h3>
-              <ul class="small" style="margin-top:8px">
-                <li>Matematika — Penjumlahan & Pengurangan</li>
-                <li>Bahasa Indonesia — Membaca & Menulis</li>
-                <li>IPA — Makhluk Hidup & Lingkungan</li>
-              </ul>
-            </div>
-            <div class="card" style="transition:.2s;cursor:pointer" onclick="document.getElementById('latihan').scrollIntoView({behavior:'smooth'})">
-              <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.3em">📝</span> Tugas Harian</h3>
-              <p class="small" style="margin-top:8px">Latihan singkat 10 menit untuk melatih konsentrasi.</p>
-            </div>
-            <div class="card" style="transition:.2s;cursor:pointer" onclick="document.getElementById('kuis').scrollIntoView({behavior:'smooth'})">
-              <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.3em">🎯</span> Progress</h3>
-              <p class="small" style="margin-top:8px">Skor kuis, catatan guru, dan lembar kerja yang bisa dicetak.</p>
-            </div>
-          </div>
-        </div>
-        <aside style="width:320px">
-          <div class="card">
-            <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.2em">⚡</span> Mulai Kuis Cepat</h3>
-            <div class="quiz">
-              <label for="quickQuizType" class="small">Pilih Materi:</label>
-              <select id="quickQuizType" style="margin-bottom:8px">
-                <option value="math">Matematika</option>
-                <option value="indo">Bahasa Indonesia</option>
-                <option value="sci">IPA</option>
-              </select>
-              <button id="startQuiz">Mulai Kuis 10 Soal</button>
-              <button class="mutebtn" id="resetProgress">Reset Progress</button>
-              <div id="quizResult" class="small" style="margin-top:8px">Skor terakhir: -</div>
-            </div>
-          </div>
-          <div class="card" style="margin-top:12px">
-              <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.2em">📥</span> Download Lembar Kerja</h3>
+      <style>
+        /* Mobile responsive improvements */
+        body {
+          font-family: 'Segoe UI', Arial, sans-serif;
+          background: #f8fbff;
+          margin: 0;
+          padding: 0;
+        }
+        .container {
+          max-width: 900px;
+          margin: 0 auto;
+          padding: 16px;
+        }
+        .sidebar, .main-content {
+          display: inline-block;
+          vertical-align: top;
+          width: 48%;
+          box-sizing: border-box;
+        }
+        .sidebar {
+          margin-right: 2%;
+        }
+        .card {
+          background: #fff;
+          border-radius: 8px;
+          box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+          margin-bottom: 20px;
+          padding: 16px;
+        }
+        .form-group {
+          margin-bottom: 12px;
+        }
+        .form-group select, .form-group textarea {
+          width: 100%;
+          font-size: 16px;
+          padding: 8px;
+          box-sizing: border-box;
+        }
+        .btn {
+          background: #2196f3;
+          color: #fff;
+          border: none;
+          border-radius: 6px;
+          padding: 12px 0;
+          font-size: 16px;
+          cursor: pointer;
+          width: 100%;
+          margin-bottom: 8px;
+        }
+        @media (max-width: 700px) {
+          .container {
+            padding: 8px;
+          }
+          .sidebar, .main-content {
+            display: block;
+            width: 100%;
+            margin: 0 0 16px 0;
+          }
+          .sidebar {
+            margin-right: 0;
+          }
+        }
+        @media (max-width: 480px) {
+          .container {
+            padding: 4px;
+          }
+          .card {
+            padding: 10px;
+          }
+          h1, h2, h3 {
+            font-size: 1.2em;
+          }
+          .btn {
+            font-size: 15px;
+            padding: 10px 0;
+          }
+        }
+      </style>
               <p class="small">Buat lembar kerja sesuai kebutuhan. Pilih materi, tipe latihan, dan masukkan soal custom jika diinginkan.</p>
               <form id="worksheetForm" class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
                 <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px">
