@@ -1,3 +1,51 @@
+/* Sidebar and card spacing for mobile */
+@media (max-width: 700px) {
+  .sidebar {
+    padding: 12px 8px 0 8px;
+    margin: 0;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .sidebar .card {
+    margin-bottom: 16px;
+    padding: 12px 10px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  .sidebar h1, .sidebar h2, .sidebar h3 {
+    text-align: left;
+    margin-left: 2px;
+  }
+}
+/* Ensure worksheet section always shows both sides */
+.worksheet-section {
+  display: flex;
+  flex-direction: row;
+  gap: 24px;
+  align-items: stretch;
+  justify-content: center;
+  width: 100%;
+  min-height: 220px;
+}
+.worksheet-section .card {
+  flex: 1 1 0;
+  min-width: 220px;
+  box-sizing: border-box;
+  padding: 24px;
+  margin: 0;
+}
+@media (max-width: 900px) {
+  .worksheet-section {
+    flex-direction: column;
+    gap: 12px;
+    min-height: unset;
+  }
+  .worksheet-section .card {
+    min-width: 0;
+    width: 100%;
+    padding: 16px;
+  }
+}
 /* Responsive: worksheet section stacks vertically on mobile */
 @media (max-width: 700px) {
   .worksheet-section {
