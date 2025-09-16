@@ -52,6 +52,20 @@
         <option value="guru">Guru</option>
         <option value="siswa">Siswa</option>
       </select>
+      <label for="mapel">Pilih Materi:</label>
+      <select id="mapel">
+        <option value="math">Matematika</option>
+        <option value="indo">Bahasa Indonesia</option>
+        <option value="sci">IPA</option>
+      </select>
+      <label for="tipe">Pilih Tipe Soal:</label>
+      <select id="tipe">
+        <option value="penjumlahan">Penjumlahan</option>
+        <option value="pengurangan">Pengurangan</option>
+        <option value="bacaan">Pemahaman Bacaan</option>
+        <option value="kata">Kata & Sinonim</option>
+        <option value="ipa">Makhluk Hidup</option>
+      </select>
       <button type="submit">Login / Register</button>
     </form>
   </div>
@@ -60,8 +74,10 @@
       e.preventDefault();
       var username = document.getElementById('username').value.trim();
       var role = document.getElementById('role').value;
-      if (username && role) {
-        localStorage.setItem('bs_user', JSON.stringify({username, role}));
+      var mapel = document.getElementById('mapel').value;
+      var tipe = document.getElementById('tipe').value;
+      if (username && role && mapel && tipe) {
+        localStorage.setItem('bs_user', JSON.stringify({username, role, mapel, tipe}));
         window.location.href = 'index.html';
       }
     };

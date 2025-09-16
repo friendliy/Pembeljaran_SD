@@ -28,6 +28,39 @@ const quizBanks = {
 };
 
 // ===========================
+// Firestore Worksheet Functions
+// ===========================
+window.saveWorksheetToFirestore = function(subject, type, custom, callback) {
+  var content = `Materi: ${subject}\nTipe: ${type}\n\n${custom || 'Soal otomatis oleh guru.'}`;
+  window.db.collection("lembar_latihan").doc(subject+"_"+type).set({content})
+    .then(function() {
+      if (typeof callback === 'function') callback(content);
+    });
+};
+
+window.loadWorksheetFromFirestore = function(subject, type, callback) {
+  window.db.collection("lembar_latihan").doc(subject+"_"+type).get()
+    .then(function(doc) {
+      if (doc.exists) callback(doc.data().content);
+      else callback('Belum ada lembar latihan yang diisi guru.');
+    });
+};
+
+window.downloadWorksheetFromFirestore = function(subject, type) {
+  window.loadWorksheetFromFirestore(subject, type, function(content) {
+    if (!content || content === 'Belum ada lembar latihan yang diisi guru.') {
+      alert('Belum ada lembar latihan dari guru.');
+      return;
+    }
+    var blob = new Blob([content], {type:'text/plain'});
+    var a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'lembar_latihan_guru.txt';
+    a.click();
+  });
+};
+
+// ===========================
 // Fungsi Kuis
 // ===========================
 function startQuiz() {
@@ -88,6 +121,80 @@ function startQuiz2() {
 // Event Listener (satu saja)
 // ===========================
 document.addEventListener('DOMContentLoaded', function(){
+
+  // --- Auth redirect & role-based UI (moved here so it runs after firebase init & script loaded) ---
+  var userRaw = localStorage.getItem('bs_user');
+  if (!userRaw) {
+    window.location.href = 'register.html';
+    return;
+  }
+  try {
+    var user = JSON.parse(userRaw);
+    var role = user.role;
+  } catch(e) {
+    window.location.href = 'register.html';
+    return;
+  }
+  var guruArea = document.getElementById('guruWorksheet');
+  var siswaArea = document.getElementById('siswaWorksheet');
+  if (role === 'guru') {
+    if (guruArea) guruArea.style.display = 'block';
+    if (siswaArea) siswaArea.style.display = 'none';
+  } else {
+    if (guruArea) guruArea.style.display = 'none';
+    if (siswaArea) siswaArea.style.display = 'block';
+  }
+
+  // Wire Save button to Firestore helper
+  var saveBtn = document.getElementById('saveWorksheet');
+  if (saveBtn) {
+    saveBtn.onclick = function() {
+      var subject = document.getElementById('worksheetSubject').value;
+      var type = document.getElementById('worksheetType').value;
+      var custom = document.getElementById('customQuestions').value;
+      if (window.saveWorksheetToFirestore) {
+        window.saveWorksheetToFirestore(subject, type, custom, function(content){
+          alert('Lembar kerja berhasil disimpan di cloud untuk siswa!');
+          var worksheetContent = document.getElementById('worksheetContent');
+          if (worksheetContent) worksheetContent.textContent = content;
+        });
+      } else {
+        alert('Fitur cloud belum tersedia.');
+      }
+    };
+  }
+
+  // Siswa: update UI and download
+  var siswaSubject = document.getElementById('siswaSubject');
+  var siswaType = document.getElementById('siswaType');
+  var worksheetContent = document.getElementById('worksheetContent');
+  function updateSiswaWorksheet() {
+    if (!worksheetContent) return;
+    var subject = siswaSubject ? siswaSubject.value : 'math';
+    var type = siswaType ? siswaType.value : 'penjumlahan';
+    if (window.loadWorksheetFromFirestore) {
+      window.loadWorksheetFromFirestore(subject, type, function(content){
+        worksheetContent.textContent = content;
+      });
+    }
+  }
+  if (siswaSubject) siswaSubject.onchange = updateSiswaWorksheet;
+  if (siswaType) siswaType.onchange = updateSiswaWorksheet;
+  updateSiswaWorksheet();
+
+  var dwSiswaBtn = document.getElementById('downloadWorksheetSiswa');
+  if (dwSiswaBtn) {
+    dwSiswaBtn.onclick = function(){
+      var subject = siswaSubject ? siswaSubject.value : 'math';
+      var type = siswaType ? siswaType.value : 'penjumlahan';
+      if (window.downloadWorksheetFromFirestore) {
+        window.downloadWorksheetFromFirestore(subject, type);
+      } else {
+        alert('Fitur cloud belum tersedia.');
+      }
+    };
+  }
+
 
   // Download Worksheet
   const dwBtn = document.getElementById('downloadWorksheet');
