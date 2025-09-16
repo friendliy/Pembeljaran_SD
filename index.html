@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="id">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Belajar Seru SD — Portal Materi & Latihan</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <div class="brand">
+  <div class="logo" style="font-size:2.4rem;letter-spacing:2px;display:flex;align-items:center;justify-content:center;">BS</div>
+      <div>
+        <div style="font-weight:700">Belajar Seru SD</div>
+        <div style="font-size:12px;color:var(--muted)">Portal Materi, Latihan, & Evaluasi</div>
+      </div>
+    </div>
+    <nav>
+      <a href="#materi">Materi</a>
+      <a href="#latihan">Latihan</a>
+      <a href="#kuis">Kuis</a>
+    </nav>
+  </header>
+
+
+  <main class="container">
+    <section class="hero">
+      <div class="hero-card" style="display:flex;align-items:center;gap:32px;">
+        <div style="flex:1">
+          <h1 style="font-size:2.2rem;margin-bottom:8px;display:flex;align-items:center;gap:10px">
+            <span class="subject math" style="width:44px;height:44px;font-size:1.6rem;display:flex;align-items:center;justify-content:center;">B</span> Halo! Selamat Belajar
+          </h1>
+          <p class="small" style="font-size:1.1rem;margin-bottom:18px">Pilih pelajaran, kerjakan latihan, dan cek nilai secara langsung.<br>Dirancang untuk siswa SD (kelas 1 — 6).</p>
+          <div class="grid">
+            <div class="card" style="transition:.2s;cursor:pointer" onclick="document.getElementById('materi').scrollIntoView({behavior:'smooth'})">
+              <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.3em">📚</span> Pelajaran Populer</h3>
+              <ul class="small" style="margin-top:8px">
+                <li>Matematika — Penjumlahan & Pengurangan</li>
+                <li>Bahasa Indonesia — Membaca & Menulis</li>
+                <li>IPA — Makhluk Hidup & Lingkungan</li>
+              </ul>
+            </div>
+            <div class="card" style="transition:.2s;cursor:pointer" onclick="document.getElementById('latihan').scrollIntoView({behavior:'smooth'})">
+              <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.3em">📝</span> Tugas Harian</h3>
+              <p class="small" style="margin-top:8px">Latihan singkat 10 menit untuk melatih konsentrasi.</p>
+            </div>
+            <div class="card" style="transition:.2s;cursor:pointer" onclick="document.getElementById('kuis').scrollIntoView({behavior:'smooth'})">
+              <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.3em">🎯</span> Progress</h3>
+              <p class="small" style="margin-top:8px">Skor kuis, catatan guru, dan lembar kerja yang bisa dicetak.</p>
+            </div>
+          </div>
+        </div>
+        <aside style="width:320px">
+          <div class="card">
+            <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.2em">⚡</span> Mulai Kuis Cepat</h3>
+            <div class="quiz">
+              <label for="quickQuizType" class="small">Pilih Materi:</label>
+              <select id="quickQuizType" style="margin-bottom:8px">
+                <option value="math">Matematika</option>
+                <option value="indo">Bahasa Indonesia</option>
+                <option value="sci">IPA</option>
+              </select>
+              <button id="startQuiz">Mulai Kuis 10 Soal</button>
+              <button class="mutebtn" id="resetProgress">Reset Progress</button>
+              <div id="quizResult" class="small" style="margin-top:8px">Skor terakhir: -</div>
+            </div>
+          </div>
+          <div class="card" style="margin-top:12px">
+              <h3 style="display:flex;align-items:center;gap:6px"><span style="font-size:1.2em">📥</span> Download Lembar Kerja</h3>
+              <p class="small">Buat lembar kerja sesuai kebutuhan. Pilih materi, tipe latihan, dan masukkan soal custom jika diinginkan.</p>
+              <form id="worksheetForm" class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
+                <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px">
+                  <div>
+                    <label for="worksheetSubject" class="small">Materi:</label><br>
+                    <select id="worksheetSubject" style="margin-top:4px">
+                      <option value="math">Matematika</option>
+                      <option value="indo">Bahasa Indonesia</option>
+                      <option value="sci">IPA</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label for="worksheetType" class="small">Tipe:</label><br>
+                    <select id="worksheetType" style="margin-top:4px">
+                      <option value="penjumlahan">Penjumlahan</option>
+                      <option value="pengurangan">Pengurangan</option>
+                      <option value="bacaan">Pemahaman Bacaan</option>
+                      <option value="kata">Kata & Sinonim</option>
+                      <option value="ipa">Makhluk Hidup</option>
+                    </select>
+                  </div>
+                </div>
+                <div style="margin-bottom:10px">
+                  <label for="customQuestions" class="small">Soal Custom (opsional, pisahkan dengan baris baru):</label>
+                  <textarea id="customQuestions" rows="4" style="width:100%;margin-top:4px" placeholder="Contoh:\n1) 12 + 5 = __\n2) 7 - 3 = __"></textarea>
+                </div>
+                <button type="button" id="downloadWorksheet" style="width:100%;margin-top:8px">Unduh Lembar Kerja (.txt)</button>
+              </form>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="lessons" id="materi">
+      <div>
+        <h2>Materi & Modul</h2>
+        <div class="lesson-list">
+          <div class="lesson-item card" style="cursor:pointer;transition:.2s" onclick="showLesson('math')">
+            <div class="subject math" style="font-size:2rem;display:flex;align-items:center;justify-content:center;">M</div>
+            <div>
+              <strong>Matematika: Penjumlahan</strong>
+              <div class="small">Konsep dasar, soal latihan, dan permainan pecahan.</div>
+              <div style="margin-top:8px"><button class="mutebtn">Buka Materi</button></div>
+            </div>
+          </div>
+          <div class="lesson-item card" style="cursor:pointer;transition:.2s" onclick="showLesson('indo')">
+            <div class="subject indo" style="font-size:2rem;display:flex;align-items:center;justify-content:center;">B</div>
+            <div>
+              <strong>Bahasa Indonesia: Membaca</strong>
+              <div class="small">Latihan membaca, kosa kata, dan latihan memahami teks.</div>
+              <div style="margin-top:8px"><button class="mutebtn">Buka Materi</button></div>
+            </div>
+          </div>
+          <div class="lesson-item card" style="cursor:pointer;transition:.2s" onclick="showLesson('sci')">
+            <div class="subject sci" style="font-size:2rem;display:flex;align-items:center;justify-content:center;">I</div>
+            <div>
+              <strong>IPA: Makhluk Hidup</strong>
+              <div class="small">Pengertian, contoh, dan eksperimen sederhana di rumah.</div>
+              <div style="margin-top:8px"><button class="mutebtn">Buka Materi</button></div>
+            </div>
+          </div>
+        </div>
+        <div id="lessonContent" style="margin-top:12px"></div>
+        <div id="materiPage" style="display:none;margin-top:24px">
+          <div class="card" id="materiDetail"></div>
+          <form id="uploadForm" style="margin-top:18px">
+            <label for="modulFile" class="small">Upload Modul Materi (PDF/TXT):</label>
+            <input type="file" id="modulFile" accept=".pdf,.txt">
+            <button type="submit" class="mutebtn" style="margin-left:8px">Upload</button>
+            <div id="uploadStatus" class="small" style="margin-top:8px"></div>
+          </form>
+        </div>
+      </div>
+
+      <aside id="latihan" class="card">
+        <h3>Latihan Harian</h3>
+        <p class="small">Pilih kategori latihan:</p>
+        <select id="practiceType">
+          <option value="penjumlahan">Penjumlahan (Matematika)</option>
+          <option value="pengurangan">Pengurangan (Matematika)</option>
+          <option value="bacaan">Pemahaman Bacaan (Bahasa)</option>
+          <option value="kata">Kata & Sinonim (Bahasa)</option>
+          <option value="ipa">Makhluk Hidup (IPA)</option>
+        </select>
+        <div style="margin-top:8px">
+          <button id="generatePractice">Buat Latihan</button>
+        </div>
+        <div id="practiceArea" style="margin-top:10px"></div>
+      </aside>
+    </section>
+
+
+    <section id="kuis" style="margin-top:22px">
+      <h2>Kuis Interaktif</h2>
+      <div class="card" style="padding:18px">
+        <div style="margin-bottom:12px">
+          <label for="quickQuizType2" class="small">Pilih Materi:</label>
+          <select id="quickQuizType2" style="margin-left:8px">
+            <option value="math">Matematika</option>
+            <option value="indo">Bahasa Indonesia</option>
+            <option value="sci">IPA</option>
+          </select>
+          <button id="startQuiz2" style="margin-left:12px">Mulai Kuis</button>
+        </div>
+        <div id="quizBox2"></div>
+      </div>
+    </section>
+
+    <footer>
+      <p>© 2025 Belajar Seru SD — Dibuat untuk bahan pembelajaran siswa SD.</p>
+    </footer>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
