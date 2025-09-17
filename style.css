@@ -36,23 +36,7 @@
 #worksheet-card .form-row > div {
   flex: 1;
 }
-#downloadWorksheet {
-  background: #2196f3;
-  color: #fff;
-  border: none;
-  border-radius: 8px;
-  padding: 14px 0;
-  font-size: 1.1rem;
-  font-weight: 600;
-  cursor: pointer;
-  width: 100%;
-  margin-top: 10px;
-  box-shadow: 0 2px 8px rgba(33,150,243,0.08);
-  transition: background 0.2s;
-}
-#downloadWorksheet:hover {
-  background: #1976d2;
-}
+/* top worksheet download button removed from markup */
 @media (max-width: 700px) {
   #worksheet-card .card {
     padding: 16px 6px 14px 6px;
@@ -221,6 +205,20 @@
   box-sizing: border-box;
   padding: 24px;
   margin: 0;
+}
+/* Latihan upload card style (guru) */
+.latihan-upload { max-width:720px; margin:0 auto; }
+.latihan-upload .upload-row{ display:flex; gap:18px; }
+.latihan-upload .upload-col{ flex:1; }
+.latihan-upload label.small{ display:block; margin-bottom:6px; color:#333; font-weight:600 }
+.latihan-upload select{ width:100%; padding:12px; border-radius:10px; border:1px solid #e2e8f0; font-size:1rem }
+.latihan-upload .file-wrap{ display:flex; align-items:center; gap:12px }
+.latihan-upload input[type=file]{ border:1px dashed #cbd5e1; padding:10px; border-radius:8px; background:#fff }
+.btn-green-big{ background:#43a047; color:#fff; border:none; padding:18px; width:100%; border-radius:14px; font-size:1.2rem; font-weight:800; box-shadow:0 6px 18px rgba(67,160,71,0.16); cursor:pointer }
+.btn-green-big:hover{ background:#388e3c }
+@media (max-width:700px){
+  .latihan-upload .upload-row{ flex-direction:column }
+  .latihan-upload .file-wrap{ flex-direction:column; align-items:stretch }
 }
 @media (max-width: 900px) {
   .worksheet-section {

@@ -29,6 +29,24 @@ const quizBanks = {
 
 // Ensure each bank has at least 25 questions by generating simple questions when necessary
 function ensureQuizBank(type) {
+  // special case: 'all' -> combine every real subject's bank
+  if (type === 'all') {
+    var combined = [];
+    var subjects = (window.SUBJECTS || []).map(s=>s.value).filter(v=>v && v!=='all' && v!=='custom');
+    subjects.forEach(function(sub){
+      // ensure each sub bank is populated
+      ensureQuizBank(sub);
+      if (quizBanks[sub] && quizBanks[sub].length) combined = combined.concat(quizBanks[sub]);
+    });
+    // deduplicate by question text to avoid near-duplicates when combining
+    var seen = new Set();
+    var dedup = [];
+    combined.forEach(function(it){
+      var key = (it.q || '') + '|' + (it.choices||[]).join('|');
+      if (!seen.has(key)) { seen.add(key); dedup.push(it); }
+    });
+    return dedup;
+  }
   if (!quizBanks[type]) quizBanks[type] = [];
   const bank = quizBanks[type];
   while (bank.length < 25) {
@@ -109,25 +127,55 @@ const builtInLatihan = [
 // saveWorksheetToFirestore: supports either text content or file payload ({fileName,mime,dataBase64})
 window.saveWorksheetToFirestore = function(subject, type, contentOrFile, callback) {
   var payload;
+  var userRaw = localStorage.getItem('bs_user');
+  var author = 'unknown';
+  try { if (userRaw) author = JSON.parse(userRaw).name || 'unknown'; } catch(e){}
+  var meta = { subject: subject, type: type, author: author, updatedAt: firebase.firestore.FieldValue.serverTimestamp() };
   if (contentOrFile && contentOrFile.fileName) {
     // it's a file object
-    payload = { file: contentOrFile, meta: { subject: subject, type: type } };
+    payload = { file: contentOrFile, meta: meta };
   } else {
     var content = `Materi: ${subject}\nTipe: ${type}\n\n${contentOrFile || 'Soal otomatis oleh guru.'}`;
-    payload = { content: content, meta: { subject: subject, type: type } };
+    payload = { content: content, meta: meta };
   }
+  // overwrite document (default .set replaces)
   window.db.collection("lembar_latihan").doc(subject+"_"+type).set(payload)
     .then(function() {
       if (typeof callback === 'function') callback(payload.content || contentOrFile);
-    });
+    }).catch(function(err){ console.error('[firestore] save error', err); if (typeof callback === 'function') callback(null); });
 };
+
+// onReady helper: call immediately if document already parsed, otherwise wait for DOMContentLoaded
+function onReady(fn){ if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', fn); else fn(); }
+
+// Central subject list - add or modify subjects here
+window.SUBJECTS = [
+  {value: 'math', label: 'Matematika'},
+  {value: 'indo', label: 'Bahasa Indonesia'},
+  {value: 'sci', label: 'IPA'},
+  {value: 'all', label: 'Semua Mapel'}
+];
+
+// populate subject selects across the UI so all mapel are available
+function populateSubjectSelects(){
+  var ids = ['uploadSubject','siswaSubject','worksheetSubject','quickQuizType2','quickQuizType'];
+  ids.forEach(function(id){
+    var el = document.getElementById(id);
+    if (!el) return;
+    // clear existing options
+    el.innerHTML = '';
+    window.SUBJECTS.forEach(function(s){
+      var opt = document.createElement('option'); opt.value = s.value; opt.text = s.label; el.appendChild(opt);
+    });
+  });
+}
 
 window.loadWorksheetFromFirestore = function(subject, type, callback) {
   window.db.collection("lembar_latihan").doc(subject+"_"+type).get()
     .then(function(doc) {
-      if (doc.exists) callback(doc.data().content);
-      else callback('Belum ada lembar latihan yang diisi guru.');
-    });
+      if (doc.exists) callback(doc.data());
+      else callback(null);
+    }).catch(function(err){ callback(null); });
 };
 
 window.downloadWorksheetFromFirestore = function(subject, type) {
@@ -171,22 +219,30 @@ window.deleteWorksheetFromFirestore = function(subject, type, callback) {
 // ===========================
 function startQuiz(onComplete) {
   const quizBox = document.getElementById('quizBox');
-  const type = document.getElementById('quickQuizType') ? document.getElementById('quickQuizType').value : 'math';
+  const typeEl = document.getElementById('quickQuizType');
+  const type = typeEl ? typeEl.value : 'math';
+  const subjectLabel = (window.SUBJECTS||[]).find(s=>s.value===type)?.label || type;
   // ensure there are enough questions (generate up to 25 if needed)
   let quizBank = ensureQuizBank(type).slice();
-  // pick 10 random unique questions
-  quizBank = quizBank.sort(() => Math.random() - 0.5).slice(0, 10);
+  console.log('[quiz] startQuiz subject=', type, 'label=', subjectLabel, 'bankSize=', quizBank.length);
+  if (!quizBank || quizBank.length === 0) {
+    quizBox.innerHTML = `<div>Tidak ada soal untuk ${subjectLabel} saat ini.</div>`;
+    if (typeof onComplete === 'function') onComplete(0);
+    return;
+  }
+  // shuffle and pick up to 10 questions (or fewer if bank smaller)
+  quizBank = quizBank.sort(() => Math.random() - 0.5).slice(0, Math.min(10, quizBank.length));
 
   let index=0, score=0;
 
   function showQuestion(){
     if(index>=quizBank.length){
-      quizBox.innerHTML = `<h3>Hasil: ${score}/${quizBank.length}</h3>`;
+      quizBox.innerHTML = `<h3>Hasil (${subjectLabel}): ${score}/${quizBank.length}</h3>`;
       if (typeof onComplete === 'function') onComplete(score);
       return;
     }
     const item = quizBank[index];
-    quizBox.innerHTML = `<div><strong>Soal ${index+1}.</strong> ${item.q}</div>`;
+  quizBox.innerHTML = `<div><strong>Soal ${index+1}.</strong> ${item.q}</div>`;
     const wrap = document.createElement('div');
     item.choices.forEach((c,i)=>{
       const btn = document.createElement('button');
@@ -201,17 +257,31 @@ function startQuiz(onComplete) {
 
 function startQuiz2(onComplete) {
   const quizBox = document.getElementById('quizBox2');
-  const type = document.getElementById('quickQuizType2') ? document.getElementById('quickQuizType2').value : 'math';
+  const typeEl2 = document.getElementById('quickQuizType2');
+  const type = typeEl2 ? typeEl2.value : 'math';
+  const subjectLabel = (window.SUBJECTS||[]).find(s=>s.value===type)?.label || type;
+  const quizStatus = document.getElementById('quizStatus');
   // ensure there are enough questions (generate up to 25 if needed)
   let quizBank = ensureQuizBank(type).slice();
-  // pick 10 random unique questions
-  quizBank = quizBank.sort(() => Math.random() - 0.5).slice(0, 10);
+  console.log('[quiz] startQuiz2 subject=', type, 'label=', subjectLabel, 'bankSize=', quizBank.length);
+  // show a visible starting message so users know the quiz is starting
+  if (quizBox) quizBox.innerHTML = `<div style="margin-bottom:8px;font-weight:700">Memulai Kuis: ${subjectLabel} — menyiapkan soal...</div>`;
+  if (quizStatus) quizStatus.textContent = 'Memulai Kuis: ' + subjectLabel;
+  if (!quizBank || quizBank.length === 0) {
+    if (quizBox) quizBox.innerHTML = `<div>Tidak ada soal untuk ${subjectLabel} saat ini.</div>`;
+    if (quizStatus) quizStatus.textContent = 'Tidak ada soal untuk ' + subjectLabel;
+    if (typeof onComplete === 'function') onComplete(0);
+    return;
+  }
+  // shuffle and pick up to 10 questions (or fewer if bank smaller)
+  quizBank = quizBank.sort(() => Math.random() - 0.5).slice(0, Math.min(10, quizBank.length));
 
   let index=0, score=0;
 
   function showQuestion(){
     if(index>=quizBank.length){
-      quizBox.innerHTML = `<h3>Hasil: ${score}/${quizBank.length}</h3>`;
+      quizBox.innerHTML = `<h3>Hasil (${subjectLabel}): ${score}/${quizBank.length}</h3>`;
+      if (quizStatus) quizStatus.textContent = 'Selesai: ' + subjectLabel + ' — Skor ' + score + '/' + quizBank.length;
       if (typeof onComplete === 'function') onComplete(score);
       return;
     }
@@ -232,7 +302,9 @@ function startQuiz2(onComplete) {
 // ===========================
 // Event Listener (satu saja)
 // ===========================
-document.addEventListener('DOMContentLoaded', function(){
+onReady(function(){
+  // ensure subject selects are populated before wiring
+  try { populateSubjectSelects(); } catch(e){}
 
   // --- Auth redirect & role-based UI (moved here so it runs after firebase init & script loaded) ---
   var userRaw = localStorage.getItem('bs_user');
@@ -280,6 +352,8 @@ document.addEventListener('DOMContentLoaded', function(){
       if (!fileInput || !fileInput.files || fileInput.files.length === 0) { alert('Pilih file lembar kerja terlebih dahulu.'); return; }
 
       var file = fileInput.files[0];
+  // limit file size to 2MB
+  if (file.size && file.size > 2*1024*1024) { alert('File terlalu besar. Maksimum 2MB.'); return; }
       var reader = new FileReader();
       reader.onload = function(evt){
         var result = evt.target.result;
@@ -322,8 +396,18 @@ document.addEventListener('DOMContentLoaded', function(){
     var subject = siswaSubject ? siswaSubject.value : 'math';
     var type = siswaType ? siswaType.value : 'penjumlahan';
     if (window.loadWorksheetFromFirestore) {
-      window.loadWorksheetFromFirestore(subject, type, function(content){
-        worksheetContent.textContent = content;
+      window.loadWorksheetFromFirestore(subject, type, function(docData){
+        if (!docData) {
+          worksheetContent.textContent = 'Belum ada lembar latihan yang diisi guru.';
+          return;
+        }
+        if (docData.file) {
+          worksheetContent.textContent = 'File tersedia: ' + (docData.file.fileName || 'lembar_kerja');
+        } else if (docData.content) {
+          worksheetContent.textContent = docData.content;
+        } else {
+          worksheetContent.textContent = 'Format lembar latihan tidak dikenali.';
+        }
       });
     }
   }
@@ -344,21 +428,24 @@ document.addEventListener('DOMContentLoaded', function(){
     };
   }
 
+  // Load latihan list automatically on page load so siswa can see/download without clicking menu
+  if (window.populateLatihanList) window.populateLatihanList();
+
   // --- Latihan list + upload in Latihan Page ---
   window.populateLatihanList = function(){
     var container = document.getElementById('latihanItems');
     if (!container) return;
     container.textContent = '';
     // Render built-in latihan first
-    var html = '<ul>';
+    var htmlBase = '<ul>';
     builtInLatihan.forEach(function(item){
-      html += `<li style="margin-bottom:8px;"><strong>${item.title}</strong><div style="font-size:0.95em;margin-top:4px">${item.content}</div><div style="margin-top:6px"><button class='builtin-download' data-id='${item.id}'>Unduh</button></div></li>`;
+      htmlBase += `<li style="margin-bottom:8px;"><strong>${item.title}</strong><div style="font-size:0.95em;margin-top:4px">${item.content}</div><div style="margin-top:6px"><button class='builtin-download' data-id='${item.id}'>Unduh</button></div></li>`;
     });
 
-    // Then also include Firestore items if available
+    // If no firestore available, just show built-ins
     if (!window.db) {
-      html += '</ul>';
-      container.innerHTML = html;
+      htmlBase += '</ul>';
+      container.innerHTML = htmlBase;
       // attach builtin handlers
       var bbtns = container.querySelectorAll('.builtin-download');
       bbtns.forEach(function(b){
@@ -373,19 +460,33 @@ document.addEventListener('DOMContentLoaded', function(){
       return;
     }
 
-    window.db.collection('lembar_latihan').get().then(function(qs){
-      if (!qs.empty) {
-        qs.forEach(function(doc){
+    // unsubscribe previous listener if exists
+    if (window._latihanUnsubscribe && typeof window._latihanUnsubscribe === 'function') {
+      try { window._latihanUnsubscribe(); } catch(e){}
+      window._latihanUnsubscribe = null;
+    }
+
+    // set up realtime listener
+    window._latihanUnsubscribe = window.db.collection('lembar_latihan').onSnapshot(function(snapshot){
+      var html = htmlBase;
+      if (!snapshot.empty) {
+        snapshot.forEach(function(doc){
           var id = doc.id; // pattern subject_type
-          var data = doc.data();
+          var data = doc.data() || {};
           var display = id.replace('_',' - ');
-          // prefer file name if available
           var fileLabel = data.file ? (data.file.fileName || 'File') : (data.content ? 'Isi (teks)' : 'Kosong');
-          html += `<li style="margin-bottom:8px;" data-docid='${id}'><strong>${display}</strong><div style="font-size:0.95em;margin-top:4px">${fileLabel}</div><div style="margin-top:6px"><button class='latihan-download' data-id='${id}'>Unduh</button> <button class='latihan-delete' data-id='${id}' style='margin-left:8px;display:none;background:#e53935;color:#fff'>Hapus</button></div></li>`;
+          var author = (data.meta && data.meta.author) ? data.meta.author : 'guru';
+          var when = '';
+          if (data.meta && data.meta.updatedAt && data.meta.updatedAt.toDate) {
+            try { when = data.meta.updatedAt.toDate().toLocaleString(); } catch(e){ when = '';} 
+          }
+          var metaLine = `<div style="font-size:0.8em;color:#666;margin-top:4px">${author}${when? ' • '+when : ''}</div>`;
+          html += `<li style="margin-bottom:8px;" data-docid='${id}'><strong>${display}</strong>${metaLine}<div style="font-size:0.95em;margin-top:4px">${fileLabel}</div><div style="margin-top:6px"><button class='latihan-download' data-id='${id}'>Unduh</button> <button class='latihan-delete' data-id='${id}' style='margin-left:8px;display:none;background:#e53935;color:#fff'>Hapus</button></div></li>`;
         });
       }
       html += '</ul>';
       container.innerHTML = html;
+
       // attach builtin handlers
       var bbtns = container.querySelectorAll('.builtin-download');
       bbtns.forEach(function(b){
@@ -397,6 +498,7 @@ document.addEventListener('DOMContentLoaded', function(){
           var a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = item.title.replace(/\s+/g,'_') + '.txt'; a.click();
         };
       });
+
       // attach firestore handlers
       var buttons = container.querySelectorAll('.latihan-download');
       buttons.forEach(function(b){
@@ -408,6 +510,7 @@ document.addEventListener('DOMContentLoaded', function(){
           if (window.downloadWorksheetFromFirestore) window.downloadWorksheetFromFirestore(subject, type);
         };
       });
+
       // attach delete handlers (visible only to guru)
       var delButtons = container.querySelectorAll('.latihan-delete');
       var userRaw = localStorage.getItem('bs_user');
@@ -429,7 +532,7 @@ document.addEventListener('DOMContentLoaded', function(){
           }
         };
       });
-    }).catch(function(err){
+    }, function(err){
       container.textContent = 'Gagal memuat daftar: '+err.message;
     });
   };
@@ -456,6 +559,8 @@ document.addEventListener('DOMContentLoaded', function(){
 
       // There is a file: read it
       var file = fileInput.files[0];
+  // limit file size to 2MB
+  if (file.size && file.size > 2*1024*1024) { alert('File terlalu besar. Maksimum 2MB.'); return; }
       var reader = new FileReader();
       reader.onload = function(evt){
         var result = evt.target.result;
@@ -537,6 +642,45 @@ document.addEventListener('DOMContentLoaded', function(){
       });
     });
   }
+
+  // Debug button: show bank sizes for each subject
+  const dbg = document.getElementById('quizDebugBtn');
+  if (dbg) {
+    dbg.addEventListener('click', function(){
+      try {
+        const subjects = ['math','indo','sci','all'];
+        const infos = subjects.map(s=>{
+          const bank = ensureQuizBank(s) || [];
+          return { k: s, size: bank.length, sample: bank.slice(0,3).map(i=>i.q || i) };
+        });
+        const box = document.getElementById('quizBox2');
+        if (box) {
+          box.innerHTML = '<h4>Debug: bank info</h4>' + infos.map(info=>{
+            return `<div style="margin-bottom:8px"><strong>${info.k}</strong> — ${info.size} soal<ul>${info.sample.map(q=>`<li>${q}</li>`).join('')}</ul></div>`;
+          }).join('');
+        } else alert('Debug: '+ JSON.stringify(infos));
+      } catch(err){ alert('Debug err: '+err.message); }
+    });
+  }
+
+  // Ensure the quickQuizType2 select has the proper current value after population
+  try {
+    var qq2 = document.getElementById('quickQuizType2');
+    if (qq2 && qq2.options && qq2.options.length>0) qq2.selectedIndex = 0;
+  } catch(e){}
+
+  // Delegated fallback: ensure the button works even if direct handler fails to attach
+  document.addEventListener('click', function(e){
+    try {
+      var tgt = e.target || e.srcElement;
+      if (!tgt) return;
+      if (tgt.id === 'startQuiz2') {
+        if (tgt.disabled) return;
+        tgt.disabled = true;
+        startQuiz2(function(){ tgt.disabled = false; });
+      }
+    } catch(err){ console.warn('delegated startQuiz2 handler error', err); }
+  });
 
   // Generate Latihan
   const btnPractice = document.getElementById('generatePractice');

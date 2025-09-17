@@ -57,6 +57,7 @@
         <option value="math">Matematika</option>
         <option value="indo">Bahasa Indonesia</option>
         <option value="sci">IPA</option>
+        <option value="all">Semua Mapel</option>
       </select>
       <label for="tipe">Pilih Tipe Soal:</label>
       <select id="tipe">
@@ -77,7 +78,8 @@
       var mapel = document.getElementById('mapel').value;
       var tipe = document.getElementById('tipe').value;
       if (username && role && mapel && tipe) {
-        localStorage.setItem('bs_user', JSON.stringify({username, role, mapel, tipe}));
+        // store both name and username for compatibility with other code
+        localStorage.setItem('bs_user', JSON.stringify({name: username, username: username, role: role, mapel: mapel, tipe: tipe}));
         window.location.href = 'index.html';
       }
     };

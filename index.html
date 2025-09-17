@@ -1,4 +1,3 @@
-  <div id="practiceArea" style="margin-top:10px"></div>
 <!doctype html>
 <html lang="id">
 <head>
@@ -30,7 +29,7 @@
         <p>Website ini dibuat untuk membantu anak SD belajar dengan cara yang menyenangkan. Yuk mulai belajar!</p>
       </section>
 
-      <section id="materi" class="hidden">
+  <section id="materiIntro" class="hidden">
         <h2>Materi Belajar</h2>
         <ul>
           <li>Matematika: Penjumlahan & Pengurangan</li>
@@ -39,59 +38,7 @@
         </ul>
       </section>
 
-      <section id="worksheet-card">
-        <div id="guruWorksheet" style="display:none">
-          <form id="worksheetForm" class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
-            <div style="display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:10px">
-              <div>
-                <label for="worksheetSubject" class="small">Materi:</label><br>
-                <select id="worksheetSubject" style="margin-top:4px">
-                  <option value="math">Matematika</option>
-                  <option value="indo">Bahasa Indonesia</option>
-                  <option value="sci">IPA</option>
-                </select>
-              </div>
-              <div>
-                <label for="worksheetType" class="small">Tipe:</label><br>
-                <select id="worksheetType" style="margin-top:4px">
-                  <option value="penjumlahan">Penjumlahan</option>
-                  <option value="pengurangan">Pengurangan</option>
-                  <option value="bacaan">Pemahaman Bacaan</option>
-                  <option value="kata">Kata & Sinonim</option>
-                  <option value="ipa">Makhluk Hidup</option>
-                </select>
-              </div>
-            </div>
-            <div style="margin-bottom:10px">
-              <label for="worksheetFileInput" class="small">Unggah Lembar Kerja (PDF/TXT):</label>
-              <input type="file" id="worksheetFileInput" accept=".pdf,.txt" style="display:block;margin-top:6px">
-            </div>
-            <button type="button" id="downloadWorksheet" style="width:100%;margin-top:8px;display:none">Unduh Lembar Kerja (.txt)</button>
-            <button type="button" id="saveWorksheet" style="width:100%;margin-top:8px;background:#43a047;color:#fff">Unggah Lembar Kerja untuk Siswa</button>
-          </form>
-        </div>
-        <div id="siswaWorksheet" style="display:none">
-          <div class="card" style="background:#f8f9fa;padding:12px;margin-bottom:8px">
-            <h3>Lembar Latihan dari Guru</h3>
-            <label for="siswaSubject">Materi:</label>
-            <select id="siswaSubject" style="margin-bottom:8px">
-              <option value="math">Matematika</option>
-              <option value="indo">Bahasa Indonesia</option>
-              <option value="sci">IPA</option>
-            </select>
-            <label for="siswaType">Tipe:</label>
-            <select id="siswaType" style="margin-bottom:8px">
-              <option value="penjumlahan">Penjumlahan</option>
-              <option value="pengurangan">Pengurangan</option>
-              <option value="bacaan">Pemahaman Bacaan</option>
-              <option value="kata">Kata & Sinonim</option>
-              <option value="ipa">Makhluk Hidup</option>
-            </select>
-            <div id="worksheetContent">Belum ada lembar latihan yang diisi guru.</div>
-            <button type="button" id="downloadWorksheetSiswa" style="width:100%;margin-top:8px">Unduh Lembar Latihan (.txt)</button>
-          </div>
-        </div>
-      </section>
+      
     </main>
 
     <section class="lessons" id="materi">
@@ -160,25 +107,40 @@
           </div>
         </div>
 
-        <div class="card" style="padding:12px; margin-bottom:12px" id="latihanUploadCard" style="display:none">
-          <h3>Unggah / Simpan Lembar Kerja (Guru)</h3>
-          <label for="uploadSubject">Materi</label>
-          <select id="uploadSubject" style="display:block;margin-bottom:8px">
-            <option value="math">Matematika</option>
-            <option value="indo">Bahasa Indonesia</option>
-            <option value="sci">IPA</option>
-          </select>
-          <label for="uploadType">Tipe</label>
-          <select id="uploadType" style="display:block;margin-bottom:8px">
-            <option value="penjumlahan">Penjumlahan</option>
-            <option value="pengurangan">Pengurangan</option>
-            <option value="bacaan">Pemahaman Bacaan</option>
-            <option value="kata">Kata & Sinonim</option>
-            <option value="ipa">Makhluk Hidup</option>
-          </select>
-          <label for="uploadFileInput" style="display:block;margin-top:6px">Unggah file lembar kerja (.txt, .pdf):</label>
-          <input type="file" id="uploadFileInput" accept=".txt,.pdf" style="display:block;margin-bottom:8px">
-          <button id="uploadSaveBtn" style="background:#43a047;color:#fff;width:100%;padding:12px;font-weight:700">Simpan Lembar Kerja ke Cloud</button>
+        <div class="card" id="latihanUploadCard" style="display:none; padding:20px; max-width:720px; margin-left:auto; margin-right:auto;">
+          <div class="latihan-upload">
+            <h3 style="margin-top:0;margin-bottom:12px">Unggah / Simpan Lembar Kerja (Guru)</h3>
+            <div class="upload-row">
+              <div class="upload-col">
+                <label for="uploadSubject" class="small">Materi:</label>
+                <select id="uploadSubject">
+                  <option value="math">Matematika</option>
+                  <option value="indo">Bahasa Indonesia</option>
+                  <option value="sci">IPA</option>
+                  <option value="all">Semua Mapel</option>
+                </select>
+              </div>
+              <div class="upload-col">
+                <label for="uploadType" class="small">Tipe:</label>
+                <select id="uploadType">
+                  <option value="penjumlahan">Penjumlahan</option>
+                  <option value="pengurangan">Pengurangan</option>
+                  <option value="bacaan">Pemahaman Bacaan</option>
+                  <option value="kata">Kata & Sinonim</option>
+                  <option value="ipa">Makhluk Hidup</option>
+                </select>
+              </div>
+            </div>
+            <div style="margin-top:12px;margin-bottom:14px">
+              <label for="uploadFileInput" class="small">Unggah Lembar Kerja (PDF / TXT)</label>
+              <div class="file-wrap">
+                <input type="file" id="uploadFileInput" accept=".txt,.pdf">
+              </div>
+            </div>
+            <div>
+              <button id="uploadSaveBtn" class="btn-green-big">Simpan Lembar Kerja ke Cloud</button>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -192,8 +154,11 @@
             <option value="math">Matematika</option>
             <option value="indo">Bahasa Indonesia</option>
             <option value="sci">IPA</option>
+            <option value="all">Semua Mapel</option>
           </select>
           <button id="startQuiz2" style="margin-left:12px">Mulai Kuis</button>
+          <button id="quizDebugBtn" style="margin-left:8px;background:#eee;border:1px solid #ccc;padding:6px;border-radius:6px;font-size:0.85em">Debug</button>
+          <span id="quizStatus" style="margin-left:12px;font-size:0.95em;color:#333"></span>
         </div>
         <div id="quizBox2"></div>
       </div>
@@ -241,139 +206,143 @@
   </script>
   <script>
     // After firebase init and script load, make sure latihan upload card is visible for guru
-    document.addEventListener('DOMContentLoaded', function(){
-      var userRaw = localStorage.getItem('bs_user');
-      if (!userRaw) return;
-      try { var user = JSON.parse(userRaw); } catch(e){ return; }
-      var uploadCard = document.getElementById('latihanUploadCard');
-      if (user.role === 'guru') {
-        if (uploadCard) uploadCard.style.display = 'block';
-      } else {
-        if (uploadCard) uploadCard.style.display = 'none';
-      }
-    });
+    (function(){
+      try {
+        var userRaw = localStorage.getItem('bs_user');
+        if (!userRaw) return;
+        var user = JSON.parse(userRaw);
+        var uploadCard = document.getElementById('latihanUploadCard');
+        if (user.role === 'guru') {
+          if (uploadCard) uploadCard.style.display = 'block';
+        } else {
+          if (uploadCard) uploadCard.style.display = 'none';
+        }
+      } catch(e) { /* ignore */ }
+    })();
   </script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // ...existing code...
+    (function(){
+      try {
+        // Materi logic: open materi and upload
+        var materiBtns = document.querySelectorAll('.open-materi');
+        var materiPage = document.getElementById('materiPage');
+        var materiDetail = document.getElementById('materiDetail');
+        var uploadForm = document.getElementById('uploadForm');
+        var uploadedFiles = document.getElementById('uploadedFiles');
+        var uploadedList = [];
 
-      // Materi logic: open materi and upload
-      var materiBtns = document.querySelectorAll('.open-materi');
-      var materiPage = document.getElementById('materiPage');
-      var materiDetail = document.getElementById('materiDetail');
-      var uploadForm = document.getElementById('uploadForm');
-      var uploadedFiles = document.getElementById('uploadedFiles');
-      var uploadedList = [];
+        materiBtns.forEach(function(btn){
+          btn.onclick = function(){
+            var subject = btn.getAttribute('data-subject');
+            var subjectText = subject === 'math' ? 'Matematika' : subject === 'indo' ? 'Bahasa Indonesia' : 'IPA';
+            let moduleLinks = '';
+            if(subject === 'math') {
+              moduleLinks = `
+                <ul>
+                  <li><a href='https://www.ruangguru.com/blog/materi-matematika-sd' target='_blank'>Materi Matematika SD - Ruangguru</a></li>
+                  <li><a href='https://www.scribd.com/document/456789012/Modul-Matematika-SD-Kelas-4' target='_blank'>Modul Matematika Kelas 4 PDF (Scribd)</a></li>
+                  <li><a href='https://www.slideshare.net/aguswahyudi/materi-matematika-sd-kelas-4' target='_blank'>Materi Matematika SD Kelas 4 - Slideshare</a></li>
+                </ul>
+              `;
+            } else if(subject === 'indo') {
+              moduleLinks = `
+                <ul>
+                  <li><a href='https://www.ruangguru.com/blog/materi-bahasa-indonesia-sd' target='_blank'>Materi Bahasa Indonesia SD - Ruangguru</a></li>
+                  <li><a href='https://www.scribd.com/document/456789013/Modul-Bahasa-Indonesia-SD-Kelas-4' target='_blank'>Modul Bahasa Indonesia Kelas 4 PDF (Scribd)</a></li>
+                  <li><a href='https://www.slideshare.net/aguswahyudi/materi-bahasa-indonesia-sd-kelas-4' target='_blank'>Materi Bahasa Indonesia SD Kelas 4 - Slideshare</a></li>
+                </ul>
+              `;
+            } else if(subject === 'sci') {
+              moduleLinks = `
+                <ul>
+                  <li><a href='https://www.ruangguru.com/blog/materi-ipa-sd' target='_blank'>Materi IPA SD - Ruangguru</a></li>
+                  <li><a href='https://www.scribd.com/document/456789014/Modul-IPA-SD-Kelas-4' target='_blank'>Modul IPA Kelas 4 PDF (Scribd)</a></li>
+                  <li><a href='https://www.slideshare.net/aguswahyudi/materi-ipa-sd-kelas-4' target='_blank'>Materi IPA SD Kelas 4 - Slideshare</a></li>
+                </ul>
+              `;
+            }
+            if(materiDetail){
+              materiDetail.innerHTML = `<h3>${subjectText}</h3>
+                <p>Modul materi valid untuk ${subjectText}:</p>
+                ${moduleLinks}
+                <p><a href='https://www.google.com/search?q=materi+${encodeURIComponent(subjectText.toLowerCase())}+sd' target='_blank' style='color:#2196f3;text-decoration:underline'>Cari materi lain di Google</a></p>`;
+            }
+            if(materiPage){
+              materiPage.style.display = 'block';
+              materiPage.scrollIntoView({behavior:'smooth'});
+            }
+          };
+        });
 
-      materiBtns.forEach(function(btn){
-        btn.onclick = function(){
-          var subject = btn.getAttribute('data-subject');
-          var subjectText = subject === 'math' ? 'Matematika' : subject === 'indo' ? 'Bahasa Indonesia' : 'IPA';
-          let moduleLinks = '';
-          if(subject === 'math') {
-            moduleLinks = `
-              <ul>
-                <li><a href='https://www.ruangguru.com/blog/materi-matematika-sd' target='_blank'>Materi Matematika SD - Ruangguru</a></li>
-                <li><a href='https://www.scribd.com/document/456789012/Modul-Matematika-SD-Kelas-4' target='_blank'>Modul Matematika Kelas 4 PDF (Scribd)</a></li>
-                <li><a href='https://www.slideshare.net/aguswahyudi/materi-matematika-sd-kelas-4' target='_blank'>Materi Matematika SD Kelas 4 - Slideshare</a></li>
-              </ul>
-            `;
-          } else if(subject === 'indo') {
-            moduleLinks = `
-              <ul>
-                <li><a href='https://www.ruangguru.com/blog/materi-bahasa-indonesia-sd' target='_blank'>Materi Bahasa Indonesia SD - Ruangguru</a></li>
-                <li><a href='https://www.scribd.com/document/456789013/Modul-Bahasa-Indonesia-SD-Kelas-4' target='_blank'>Modul Bahasa Indonesia Kelas 4 PDF (Scribd)</a></li>
-                <li><a href='https://www.slideshare.net/aguswahyudi/materi-bahasa-indonesia-sd-kelas-4' target='_blank'>Materi Bahasa Indonesia SD Kelas 4 - Slideshare</a></li>
-              </ul>
-            `;
-          } else if(subject === 'sci') {
-            moduleLinks = `
-              <ul>
-                <li><a href='https://www.ruangguru.com/blog/materi-ipa-sd' target='_blank'>Materi IPA SD - Ruangguru</a></li>
-                <li><a href='https://www.scribd.com/document/456789014/Modul-IPA-SD-Kelas-4' target='_blank'>Modul IPA Kelas 4 PDF (Scribd)</a></li>
-                <li><a href='https://www.slideshare.net/aguswahyudi/materi-ipa-sd-kelas-4' target='_blank'>Materi IPA SD Kelas 4 - Slideshare</a></li>
-              </ul>
-            `;
-          }
-          if(materiDetail){
-            materiDetail.innerHTML = `<h3>${subjectText}</h3>
-              <p>Modul materi valid untuk ${subjectText}:</p>
-              ${moduleLinks}
-              <p><a href='https://www.google.com/search?q=materi+${encodeURIComponent(subjectText.toLowerCase())}+sd' target='_blank' style='color:#2196f3;text-decoration:underline'>Cari materi lain di Google</a></p>`;
-          }
-          if(materiPage){
-            materiPage.style.display = 'block';
-            materiPage.scrollIntoView({behavior:'smooth'});
-          }
-        };
-      });
-
-      if(uploadForm && uploadedFiles){
-        uploadForm.onsubmit = function(e){
-          e.preventDefault();
-          var fileInput = document.getElementById('modulFile');
-          var status = document.getElementById('uploadStatus');
-          if(fileInput.files.length > 0){
-            var file = fileInput.files[0];
-            uploadedList.push(file.name);
-            status.textContent = 'File berhasil diupload: ' + file.name;
-            uploadedFiles.innerHTML = '<b>File Materi Anda:</b><ul>' + uploadedList.map(f => `<li>${f}</li>`).join('') + '</ul>';
-            fileInput.value = '';
-          } else {
-            status.textContent = 'Pilih file terlebih dahulu.';
-          }
-        };
-      }
-    });
+        if(uploadForm && uploadedFiles){
+          uploadForm.onsubmit = function(e){
+            e.preventDefault();
+            var fileInput = document.getElementById('modulFile');
+            var status = document.getElementById('uploadStatus');
+            if(fileInput.files.length > 0){
+              var file = fileInput.files[0];
+              uploadedList.push(file.name);
+              status.textContent = 'File berhasil diupload: ' + file.name;
+              uploadedFiles.innerHTML = '<b>File Materi Anda:</b><ul>' + uploadedList.map(f => `<li>${f}</li>`).join('') + '</ul>';
+              fileInput.value = '';
+            } else {
+              status.textContent = 'Pilih file terlebih dahulu.';
+            }
+          };
+        }
+      } catch(e) { /* ignore */ }
+    })();
   </script>
   <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      var latihanMenu = document.getElementById('latihanMenu');
-      var materiMenu = document.querySelector('nav a[href="#materi"]');
-      var kuisMenu = document.querySelector('nav a[href="#kuis"]');
-      var worksheetCard = document.getElementById('worksheet-card');
-      var homeSection = document.getElementById('home');
-      var materiSection = document.querySelector('.lessons');
-      var kuisSection = document.getElementById('kuis');
+    (function(){
+      try {
+        var latihanMenu = document.getElementById('latihanMenu');
+        var materiMenu = document.querySelector('nav a[href="#materi"]');
+        var kuisMenu = document.querySelector('nav a[href="#kuis"]');
+        var worksheetCard = document.getElementById('worksheet-card');
+        var homeSection = document.getElementById('home');
+        var materiSection = document.querySelector('.lessons');
+        var kuisSection = document.getElementById('kuis');
 
-      function hideAllSections() {
-        if (homeSection) homeSection.style.display = 'none';
-        if (worksheetCard) worksheetCard.style.display = 'none';
-        if (materiSection) materiSection.style.display = 'none';
-        if (kuisSection) kuisSection.style.display = 'none';
-      }
+        function hideAllSections() {
+          if (homeSection) homeSection.style.display = 'none';
+          if (worksheetCard) worksheetCard.style.display = 'none';
+          if (materiSection) materiSection.style.display = 'none';
+          if (kuisSection) kuisSection.style.display = 'none';
+        }
 
-      if (latihanMenu && worksheetCard) {
-        latihanMenu.addEventListener('click', function(e) {
-          e.preventDefault();
-          hideAllSections();
-          // Show the new latihan page
-          var latihanPage = document.getElementById('latihanPage');
-          if (latihanPage) {
-            latihanPage.style.display = 'block';
-            latihanPage.scrollIntoView({behavior:'smooth'});
-          }
-          // Populate list from Firestore (function implemented in script.js)
-          if (window.populateLatihanList) window.populateLatihanList();
-        });
-      }
-      if (materiMenu && materiSection) {
-        materiMenu.addEventListener('click', function(e) {
-          e.preventDefault();
-          hideAllSections();
-          materiSection.style.display = 'block';
-          materiSection.scrollIntoView({behavior:'smooth'});
-        });
-      }
-      if (kuisMenu && kuisSection) {
-        kuisMenu.addEventListener('click', function(e) {
-          e.preventDefault();
-          hideAllSections();
-          kuisSection.style.display = 'block';
-          kuisSection.scrollIntoView({behavior:'smooth'});
-        });
-      }
-    });
+        if (latihanMenu && worksheetCard) {
+          latihanMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            hideAllSections();
+            // Show the new latihan page
+            var latihanPage = document.getElementById('latihanPage');
+            if (latihanPage) {
+              latihanPage.style.display = 'block';
+              latihanPage.scrollIntoView({behavior:'smooth'});
+            }
+            // Populate list from Firestore (function implemented in script.js)
+            if (window.populateLatihanList) window.populateLatihanList();
+          });
+        }
+        if (materiMenu && materiSection) {
+          materiMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            hideAllSections();
+            materiSection.style.display = 'block';
+            materiSection.scrollIntoView({behavior:'smooth'});
+          });
+        }
+        if (kuisMenu && kuisSection) {
+          kuisMenu.addEventListener('click', function(e) {
+            e.preventDefault();
+            hideAllSections();
+            kuisSection.style.display = 'block';
+            kuisSection.scrollIntoView({behavior:'smooth'});
+          });
+        }
+      } catch(e) { /* ignore */ }
+    })();
   </script>
 </body>
 </html>
