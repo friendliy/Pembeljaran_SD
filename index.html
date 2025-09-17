@@ -201,6 +201,8 @@
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <!-- Firestore -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js"></script>
+  <!-- Auth (compat) -->
+  <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
 
   <script>
     // Inline initialization so firebase.initializeApp runs before any following scripts
@@ -262,10 +264,37 @@
           var name = (document.getElementById('modalUsername').value || '').trim();
           var role = document.getElementById('modalRole').value || 'siswa';
           if (!name) { alert('Isi nama terlebih dahulu.'); return; }
-          localStorage.setItem('bs_user', JSON.stringify({ name: name, username: name.toLowerCase().replace(/\s+/g,'_'), role: role }));
-          m.style.display = 'none';
-          // reload to let app update view
-          window.location.reload();
+          // Try to sign in anonymously with Firebase Auth so Firestore rules that
+          // require `request.auth != null` will succeed for this client.
+          try {
+            if (window.firebase && firebase.auth) {
+              firebase.auth().signInAnonymously()
+                .then(function() {
+                  // store lightweight local profile for UI
+                  localStorage.setItem('bs_user', JSON.stringify({ name: name, username: name.toLowerCase().replace(/\s+/g,'_'), role: role }));
+                  m.style.display = 'none';
+                  // reload to let app update view and let other scripts observe auth state
+                  window.location.reload();
+                })
+                .catch(function(err){
+                  console.error('Anonymous sign-in failed', err);
+                  // fallback: still store local profile so UI works, but Firestore reads may fail
+                  localStorage.setItem('bs_user', JSON.stringify({ name: name, username: name.toLowerCase().replace(/\s+/g,'_'), role: role }));
+                  m.style.display = 'none';
+                  window.location.reload();
+                });
+            } else {
+              // If firebase auth not available, just store local profile (best-effort)
+              localStorage.setItem('bs_user', JSON.stringify({ name: name, username: name.toLowerCase().replace(/\s+/g,'_'), role: role }));
+              m.style.display = 'none';
+              window.location.reload();
+            }
+          } catch(e){
+            console.error('auth modal sign-in error', e);
+            localStorage.setItem('bs_user', JSON.stringify({ name: name, username: name.toLowerCase().replace(/\s+/g,'_'), role: role }));
+            m.style.display = 'none';
+            window.location.reload();
+          }
         };
       } catch(e){ console.error('auth modal error', e); }
     }
