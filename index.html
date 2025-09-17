@@ -7,7 +7,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Belajar Seru SD</title>
   <link rel="stylesheet" href="style.css">
-  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
@@ -64,11 +63,11 @@
               </div>
             </div>
             <div style="margin-bottom:10px">
-              <label for="customQuestions" class="small">Soal Custom (opsional, pisahkan dengan baris baru):</label>
-              <textarea id="customQuestions" rows="4" style="width:100%;margin-top:4px" placeholder="Contoh:\n1) 12 + 5 = __\n2) 7 - 3 = __"></textarea>
+              <label for="worksheetFileInput" class="small">Unggah Lembar Kerja (PDF/TXT):</label>
+              <input type="file" id="worksheetFileInput" accept=".pdf,.txt" style="display:block;margin-top:6px">
             </div>
-            <button type="button" id="downloadWorksheet" style="width:100%;margin-top:8px">Unduh Lembar Kerja (.txt)</button>
-            <button type="button" id="saveWorksheet" style="width:100%;margin-top:8px;background:#43a047;color:#fff">Simpan Lembar Kerja untuk Siswa</button>
+            <button type="button" id="downloadWorksheet" style="width:100%;margin-top:8px;display:none">Unduh Lembar Kerja (.txt)</button>
+            <button type="button" id="saveWorksheet" style="width:100%;margin-top:8px;background:#43a047;color:#fff">Unggah Lembar Kerja untuk Siswa</button>
           </form>
         </div>
         <div id="siswaWorksheet" style="display:none">
@@ -137,9 +136,9 @@
         <div id="materiPage" style="display:none;margin-top:24px">
           <div class="card" id="materiDetail"></div>
           <form id="uploadForm" style="margin-top:18px">
-            <label for="modulFile" class="small">Upload Materi Anda (PDF/TXT):</label>
+            <label for="modulFile" class="small">Unggah Materi Anda (PDF/TXT):</label>
             <input type="file" id="modulFile" accept=".pdf,.txt">
-            <button type="submit" class="mutebtn" style="margin-left:8px">Upload</button>
+            <button type="submit" class="mutebtn" style="margin-left:8px">Unggah</button>
             <div id="uploadStatus" class="small" style="margin-top:8px"></div>
             <div id="uploadedFiles" style="margin-top:10px"></div>
           </form>
@@ -148,6 +147,40 @@
 
 
     </section>
+
+  <!-- Halaman Latihan: daftar lembar latihan dan unggah (hanya guru) -->
+  <section id="latihanPage" style="margin-top:22px">
+        <h2>Latihan & Lembar Kerja</h2>
+        <div class="card" style="padding:12px; margin-bottom:12px">
+          <div id="latihanControls">
+            <div id="latihanList">
+              <h3>Daftar Lembar Latihan</h3>
+              <div id="latihanItems">Memuat daftar lembar latihan...</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card" style="padding:12px; margin-bottom:12px" id="latihanUploadCard" style="display:none">
+          <h3>Unggah / Simpan Lembar Kerja (Guru)</h3>
+          <label for="uploadSubject">Materi</label>
+          <select id="uploadSubject" style="display:block;margin-bottom:8px">
+            <option value="math">Matematika</option>
+            <option value="indo">Bahasa Indonesia</option>
+            <option value="sci">IPA</option>
+          </select>
+          <label for="uploadType">Tipe</label>
+          <select id="uploadType" style="display:block;margin-bottom:8px">
+            <option value="penjumlahan">Penjumlahan</option>
+            <option value="pengurangan">Pengurangan</option>
+            <option value="bacaan">Pemahaman Bacaan</option>
+            <option value="kata">Kata & Sinonim</option>
+            <option value="ipa">Makhluk Hidup</option>
+          </select>
+          <label for="uploadFileInput" style="display:block;margin-top:6px">Unggah file lembar kerja (.txt, .pdf):</label>
+          <input type="file" id="uploadFileInput" accept=".txt,.pdf" style="display:block;margin-bottom:8px">
+          <button id="uploadSaveBtn" style="background:#43a047;color:#fff;width:100%;padding:12px;font-weight:700">Simpan Lembar Kerja ke Cloud</button>
+        </div>
+      </section>
 
 
     <section id="kuis" style="margin-top:22px">
@@ -191,20 +224,34 @@
           measurementId: "G-MEMD519RTV"
         };
         firebase.initializeApp(firebaseConfig);
-        window.db = firebase.firestore();
-        console.log('[firebase-init] initialized');
+  window.db = firebase.firestore();
+  console.log('[firebase-init] Firebase terinisialisasi');
 
         // Now load the main app script which may use window.db
         const s = document.createElement('script');
         s.src = 'script.js';
         s.defer = true;
-        s.onload = () => console.log('[app] script.js loaded');
-        s.onerror = (e) => console.error('[app] failed to load script.js', e);
+  s.onload = () => console.log('[app] script.js berhasil dimuat');
+  s.onerror = (e) => console.error('[app] gagal memuat script.js', e);
         document.head.appendChild(s);
       } catch (err) {
-        console.error('[firebase-init] error', err);
+        console.error('[firebase-init] gagal inisialisasi Firebase', err);
       }
     })();
+  </script>
+  <script>
+    // After firebase init and script load, make sure latihan upload card is visible for guru
+    document.addEventListener('DOMContentLoaded', function(){
+      var userRaw = localStorage.getItem('bs_user');
+      if (!userRaw) return;
+      try { var user = JSON.parse(userRaw); } catch(e){ return; }
+      var uploadCard = document.getElementById('latihanUploadCard');
+      if (user.role === 'guru') {
+        if (uploadCard) uploadCard.style.display = 'block';
+      } else {
+        if (uploadCard) uploadCard.style.display = 'none';
+      }
+    });
   </script>
   <script>
     document.addEventListener('DOMContentLoaded', function() {
@@ -300,8 +347,14 @@
         latihanMenu.addEventListener('click', function(e) {
           e.preventDefault();
           hideAllSections();
-          worksheetCard.style.display = 'block';
-          worksheetCard.scrollIntoView({behavior:'smooth'});
+          // Show the new latihan page
+          var latihanPage = document.getElementById('latihanPage');
+          if (latihanPage) {
+            latihanPage.style.display = 'block';
+            latihanPage.scrollIntoView({behavior:'smooth'});
+          }
+          // Populate list from Firestore (function implemented in script.js)
+          if (window.populateLatihanList) window.populateLatihanList();
         });
       }
       if (materiMenu && materiSection) {
