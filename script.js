@@ -314,6 +314,22 @@ onReady(function(){
   // ensure subject selects are populated before wiring
   try { populateSubjectSelects(); } catch(e){}
 
+  // If Firebase Auth is available, ensure the client is signed-in (anonymous) so
+  // Firestore rules that require authenticated users will accept requests.
+  try {
+    if (window.firebase && firebase.auth) {
+      var cur = firebase.auth().currentUser;
+      if (!cur) {
+        console.log('[auth] no current user, attempting anonymous sign-in...');
+        firebase.auth().signInAnonymously()
+          .then(function(userCred){ console.log('[auth] signed in anonymously as', userCred.user && userCred.user.uid); })
+          .catch(function(err){ console.warn('[auth] anonymous sign-in failed', err); });
+      } else {
+        console.log('[auth] already signed-in', cur.uid, 'anonymous=', cur.isAnonymous);
+      }
+    }
+  } catch(e){ console.warn('[auth] error checking/starting anonymous sign-in', e); }
+
   // --- Auth redirect & role-based UI (moved here so it runs after firebase init & script loaded) ---
   var userRaw = localStorage.getItem('bs_user');
   var userRaw = localStorage.getItem('bs_user');
@@ -448,7 +464,20 @@ onReady(function(){
   }
 
   // Load latihan list automatically on page load so siswa can see/download without clicking menu
-  if (window.populateLatihanList) window.populateLatihanList();
+  if (window.populateLatihanList) {
+    // Wait a short moment for auth state to settle if necessary
+    var tries = 0;
+    function startPopulate(){
+      tries++;
+      if (window.firebase && firebase.auth && !firebase.auth().currentUser && tries < 6) {
+        // wait up to ~3s for anonymous sign-in
+        setTimeout(startPopulate, 500);
+        return;
+      }
+      window.populateLatihanList();
+    }
+    startPopulate();
+  }
 
   // --- Latihan list + upload in Latihan Page ---
   window.populateLatihanList = function(){
@@ -688,57 +717,7 @@ onReady(function(){
     if (qq2 && qq2.options && qq2.options.length>0) qq2.selectedIndex = 0;
   } catch(e){}
 
-  // --- Debug helpers: show auth state and test download ---
-  function updateDebugStatusUI(){
-    try {
-      var dbgAuth = document.getElementById('dbgAuth');
-      var dbgUser = document.getElementById('dbgUser');
-      var dbgResult = document.getElementById('dbgResult');
-      if (!dbgAuth || !dbgUser) return;
-      if (window.firebase && firebase.auth) {
-        var u = firebase.auth().currentUser;
-        if (u) {
-          dbgAuth.textContent = 'Auth: signed-in (uid: ' + (u.uid||'') + (u.isAnonymous ? ', anonymous' : '') + ')';
-          dbgUser.textContent = 'User: ' + (localStorage.getItem('bs_user') || '-');
-        } else {
-          dbgAuth.textContent = 'Auth: not signed-in';
-          dbgUser.textContent = 'User: ' + (localStorage.getItem('bs_user') || '-');
-        }
-      } else {
-        dbgAuth.textContent = 'Auth: firebase.auth not available';
-        dbgUser.textContent = 'User: ' + (localStorage.getItem('bs_user') || '-');
-      }
-      if (dbgResult) dbgResult.textContent = '';
-    } catch(e){ console.error('updateDebugStatusUI err', e); }
-  }
-
-  function testDownload(){
-    var dbgResult = document.getElementById('dbgResult');
-    if (!dbgResult) return;
-    dbgResult.textContent = 'Mencoba membaca dokumen contoh lembar_latihan/math_penjumlahan...';
-    if (!window.db) { dbgResult.textContent = 'Firestore tidak tersedia (window.db undefined)'; return; }
-    window.db.collection('lembar_latihan').doc('math_penjumlahan').get().then(function(doc){
-      if (!doc.exists) {
-        dbgResult.textContent = 'Dokumen tidak ada (belum diunggah guru): math_penjumlahan';
-        return;
-      }
-      var data = doc.data();
-      dbgResult.textContent = 'Berhasil membaca dokumen. Tipe: ' + (data.file ? 'file' : (data.content ? 'content' : 'unknown')) + '\n' + JSON.stringify(data.meta || {}, null, 2);
-    }).catch(function(err){
-      console.error('debug testDownload error', err);
-      dbgResult.textContent = 'Gagal membaca: ' + (err && err.message ? err.message : err);
-    });
-  }
-
-  // wire debug button
-  try {
-    var dbgBtn = document.getElementById('dbgTestDownload');
-    if (dbgBtn) dbgBtn.onclick = testDownload;
-    // initial update
-    updateDebugStatusUI();
-    // also update on auth state changes
-    if (window.firebase && firebase.auth) firebase.auth().onAuthStateChanged(function(){ updateDebugStatusUI(); });
-  } catch(e){ console.warn('debug wiring error', e); }
+  
 
   // Delegated fallback: ensure the button works even if direct handler fails to attach
   document.addEventListener('click', function(e){
