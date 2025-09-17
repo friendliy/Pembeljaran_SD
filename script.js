@@ -179,41 +179,82 @@ window.loadWorksheetFromFirestore = function(subject, type, callback) {
 };
 
 window.downloadWorksheetFromFirestore = function(subject, type) {
-  window.db.collection('lembar_latihan').doc(subject+"_"+type).get().then(function(doc){
-    if (!doc.exists) { alert('Belum ada lembar latihan dari guru.'); return; }
-    var data = doc.data();
-    if (data.file) {
-      // file saved as base64
-      var bin = atob(data.file.data);
-      var len = bin.length;
-      var bytes = new Uint8Array(len);
-      for (var i=0;i<len;i++) bytes[i]=bin.charCodeAt(i);
-      var blob = new Blob([bytes], {type: data.file.mime || 'application/octet-stream'});
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-  a.download = data.file.fileName || 'unduhan.bin';
-      a.click();
-    } else if (data.content) {
-      var blob = new Blob([data.content], {type:'text/plain'});
-      var a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'lembar_latihan_guru.txt';
-      a.click();
-    } else {
-      alert('Format lembar latihan tidak dikenali.');
-    }
-  }).catch(function(err){
-    console.error('[firestore] download error', err);
-    // If this is a permission error, give the user actionable guidance
-    var msg = 'Gagal mengambil lembar latihan: ' + (err && err.message ? err.message : err);
-    try {
-      if (err && (err.code === 'permission-denied' || (err.message && /permission/i.test(err.message)))) {
-        msg += '\n\nKemungkinan penyebab: Aturan keamanan Firestore mencegah akses.\nPilihan perbaikan cepat:\n1) Di Firebase Console -> Firestore -> Rules, sementara ubah rules agar koleksi `lembar_latihan` dapat dibaca publik atau oleh pengguna terautentikasi.\n2) Aktifkan Anonymous Authentication di Firebase Console -> Authentication -> Sign-in method, sehingga aplikasi dapat sign-in anonim (fitur telah dicoba saat login).';
+  function tryGet(retryOnAuthFail){
+    window.db.collection('lembar_latihan').doc(subject+"_"+type).get().then(function(doc){
+      if (!doc.exists) { alert('Belum ada lembar latihan dari guru.'); return; }
+      var data = doc.data();
+      if (data.file) {
+        // file saved as base64
+        var bin = atob(data.file.data);
+        var len = bin.length;
+        var bytes = new Uint8Array(len);
+        for (var i=0;i<len;i++) bytes[i]=bin.charCodeAt(i);
+        var blob = new Blob([bytes], {type: data.file.mime || 'application/octet-stream'});
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = data.file.fileName || 'unduhan.bin';
+        a.click();
+      } else if (data.content) {
+        var blob = new Blob([data.content], {type:'text/plain'});
+        var a = document.createElement('a');
+        a.href = URL.createObjectURL(blob);
+        a.download = 'lembar_latihan_guru.txt';
+        a.click();
+      } else {
+        alert('Format lembar latihan tidak dikenali.');
       }
-    } catch(e){ /* ignore */ }
-    alert(msg);
-  });
+    }).catch(function(err){
+      console.error('[firestore] download error', err);
+      var isPerm = err && (err.code === 'permission-denied' || (err.message && /permission/i.test(err.message)));
+      if (isPerm && retryOnAuthFail) {
+        // Try to sign in anonymously then retry once
+        try {
+          if (window.firebase && firebase.auth) {
+            firebase.auth().signInAnonymously().then(function(){
+              // retry once
+              tryGet(false);
+            }).catch(function(signErr){
+              alert('Gagal sign-in anonim: '+(signErr && signErr.message ? signErr.message : signErr) + '\n\nPeriksa Firestore Rules di Firebase Console.');
+            });
+            return;
+          }
+        } catch(e){}
+      }
+      var msg = 'Gagal mengambil lembar latihan: ' + (err && err.message ? err.message : err);
+      msg += '\n\nJika Anda mengelola Firebase, periksa Rules Firestore atau aktifkan Anonymous Auth seperti panduan.';
+      alert(msg);
+    });
+  }
+  tryGet(true);
 };
+
+// Banner wiring: update anon status and buttons
+try {
+  function updateAnonBanner(){
+    var banner = document.getElementById('anonBanner');
+    var status = document.getElementById('anonStatus');
+    if (!banner || !status) return;
+    if (window.firebase && firebase.auth) {
+      var u = firebase.auth().currentUser;
+      if (u) {
+        banner.style.display = 'block';
+        status.textContent = 'Signed-in (uid: '+ (u.uid||'') + (u.isAnonymous ? ', anonymous' : '') + ')';
+      } else {
+        banner.style.display = 'block';
+        status.textContent = 'Belum signed-in. Tekan Sign in anonim atau buka modal "Masuk".';
+      }
+    } else {
+      banner.style.display = 'none';
+    }
+  }
+  var anonBtn = document.getElementById('anonSignInBtn');
+  var anonHide = document.getElementById('anonHideBtn');
+  if (anonBtn) anonBtn.onclick = function(){ if (window.firebase && firebase.auth) firebase.auth().signInAnonymously().catch(function(err){ alert('Gagal sign-in anonim: '+(err && err.message ? err.message : err)); }); };
+  if (anonHide) anonHide.onclick = function(){ var b=document.getElementById('anonBanner'); if (b) b.style.display='none'; };
+  if (window.firebase && firebase.auth) firebase.auth().onAuthStateChanged(updateAnonBanner);
+  // initial
+  setTimeout(updateAnonBanner, 500);
+} catch(e){ console.warn('anon banner wiring failed', e); }
 
 // Delete worksheet from Firestore (only call when authorized)
 window.deleteWorksheetFromFirestore = function(subject, type, callback) {
