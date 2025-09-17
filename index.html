@@ -197,6 +197,15 @@
     </footer>
   </main>
 
+  <!-- Debug panel (visible for developer) -->
+  <div id="debugPanel" style="position:fixed;right:12px;bottom:12px;background:rgba(0,0,0,0.7);color:#fff;padding:10px;border-radius:8px;z-index:9999;font-size:0.85em">
+    <div><strong>Debug</strong></div>
+    <div id="dbgAuth" style="margin-top:6px">Auth: -</div>
+    <div id="dbgUser" style="margin-top:6px">User: -</div>
+    <div style="margin-top:8px"><button id="dbgTestDownload" style="padding:6px;border-radius:6px;border:0;background:#2196f3;color:#fff">Test Download</button></div>
+    <div id="dbgResult" style="margin-top:8px;color:#ffd;max-width:300px;white-space:pre-wrap"></div>
+  </div>
+
   <!-- Firebase App (core) -->
   <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
   <!-- Firestore -->

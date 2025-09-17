@@ -203,7 +203,15 @@ window.downloadWorksheetFromFirestore = function(subject, type) {
       alert('Format lembar latihan tidak dikenali.');
     }
   }).catch(function(err){
-    alert('Gagal mengambil lembar latihan: '+err.message);
+    console.error('[firestore] download error', err);
+    // If this is a permission error, give the user actionable guidance
+    var msg = 'Gagal mengambil lembar latihan: ' + (err && err.message ? err.message : err);
+    try {
+      if (err && (err.code === 'permission-denied' || (err.message && /permission/i.test(err.message)))) {
+        msg += '\n\nKemungkinan penyebab: Aturan keamanan Firestore mencegah akses.\nPilihan perbaikan cepat:\n1) Di Firebase Console -> Firestore -> Rules, sementara ubah rules agar koleksi `lembar_latihan` dapat dibaca publik atau oleh pengguna terautentikasi.\n2) Aktifkan Anonymous Authentication di Firebase Console -> Authentication -> Sign-in method, sehingga aplikasi dapat sign-in anonim (fitur telah dicoba saat login).';
+      }
+    } catch(e){ /* ignore */ }
+    alert(msg);
   });
 };
 
@@ -679,6 +687,58 @@ onReady(function(){
     var qq2 = document.getElementById('quickQuizType2');
     if (qq2 && qq2.options && qq2.options.length>0) qq2.selectedIndex = 0;
   } catch(e){}
+
+  // --- Debug helpers: show auth state and test download ---
+  function updateDebugStatusUI(){
+    try {
+      var dbgAuth = document.getElementById('dbgAuth');
+      var dbgUser = document.getElementById('dbgUser');
+      var dbgResult = document.getElementById('dbgResult');
+      if (!dbgAuth || !dbgUser) return;
+      if (window.firebase && firebase.auth) {
+        var u = firebase.auth().currentUser;
+        if (u) {
+          dbgAuth.textContent = 'Auth: signed-in (uid: ' + (u.uid||'') + (u.isAnonymous ? ', anonymous' : '') + ')';
+          dbgUser.textContent = 'User: ' + (localStorage.getItem('bs_user') || '-');
+        } else {
+          dbgAuth.textContent = 'Auth: not signed-in';
+          dbgUser.textContent = 'User: ' + (localStorage.getItem('bs_user') || '-');
+        }
+      } else {
+        dbgAuth.textContent = 'Auth: firebase.auth not available';
+        dbgUser.textContent = 'User: ' + (localStorage.getItem('bs_user') || '-');
+      }
+      if (dbgResult) dbgResult.textContent = '';
+    } catch(e){ console.error('updateDebugStatusUI err', e); }
+  }
+
+  function testDownload(){
+    var dbgResult = document.getElementById('dbgResult');
+    if (!dbgResult) return;
+    dbgResult.textContent = 'Mencoba membaca dokumen contoh lembar_latihan/math_penjumlahan...';
+    if (!window.db) { dbgResult.textContent = 'Firestore tidak tersedia (window.db undefined)'; return; }
+    window.db.collection('lembar_latihan').doc('math_penjumlahan').get().then(function(doc){
+      if (!doc.exists) {
+        dbgResult.textContent = 'Dokumen tidak ada (belum diunggah guru): math_penjumlahan';
+        return;
+      }
+      var data = doc.data();
+      dbgResult.textContent = 'Berhasil membaca dokumen. Tipe: ' + (data.file ? 'file' : (data.content ? 'content' : 'unknown')) + '\n' + JSON.stringify(data.meta || {}, null, 2);
+    }).catch(function(err){
+      console.error('debug testDownload error', err);
+      dbgResult.textContent = 'Gagal membaca: ' + (err && err.message ? err.message : err);
+    });
+  }
+
+  // wire debug button
+  try {
+    var dbgBtn = document.getElementById('dbgTestDownload');
+    if (dbgBtn) dbgBtn.onclick = testDownload;
+    // initial update
+    updateDebugStatusUI();
+    // also update on auth state changes
+    if (window.firebase && firebase.auth) firebase.auth().onAuthStateChanged(function(){ updateDebugStatusUI(); });
+  } catch(e){ console.warn('debug wiring error', e); }
 
   // Delegated fallback: ensure the button works even if direct handler fails to attach
   document.addEventListener('click', function(e){
