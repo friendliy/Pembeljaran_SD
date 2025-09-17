@@ -403,27 +403,29 @@
         var latihanMenu = document.getElementById('latihanMenu');
         var materiMenu = document.querySelector('nav a[href="#materi"]');
         var kuisMenu = document.querySelector('nav a[href="#kuis"]');
-        var worksheetCard = document.getElementById('worksheet-card');
+  var worksheetCard = document.getElementById('worksheet-card');
         var homeSection = document.getElementById('home');
         var materiSection = document.querySelector('.lessons');
         var kuisSection = document.getElementById('kuis');
+  var latihanPageSection = document.getElementById('latihanPage');
 
         function hideAllSections() {
           if (homeSection) homeSection.style.display = 'none';
           if (worksheetCard) worksheetCard.style.display = 'none';
           if (materiSection) materiSection.style.display = 'none';
           if (kuisSection) kuisSection.style.display = 'none';
+          if (latihanPageSection) latihanPageSection.style.display = 'none';
         }
 
-        if (latihanMenu && worksheetCard) {
+        // Always attach handler to Latihan menu so clicking it opens latihan page
+        if (latihanMenu) {
           latihanMenu.addEventListener('click', function(e) {
             e.preventDefault();
             hideAllSections();
-            // Show the new latihan page
-            var latihanPage = document.getElementById('latihanPage');
-            if (latihanPage) {
-              latihanPage.style.display = 'block';
-              latihanPage.scrollIntoView({behavior:'smooth'});
+            // Show the latihan page
+            if (latihanPageSection) {
+              latihanPageSection.style.display = 'block';
+              latihanPageSection.scrollIntoView({behavior:'smooth'});
             }
             // Populate list from Firestore (function implemented in script.js)
             if (window.populateLatihanList) window.populateLatihanList();
