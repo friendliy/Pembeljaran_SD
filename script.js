@@ -222,6 +222,20 @@ window.downloadWorksheetFromFirestore = function(subject, type) {
       }
       var msg = 'Gagal mengambil lembar latihan: ' + (err && err.message ? err.message : err);
       msg += '\n\nJika Anda mengelola Firebase, periksa Rules Firestore atau aktifkan Anonymous Auth seperti panduan.';
+      try {
+        var rm = document.getElementById('rulesModal');
+        var rmMsg = document.getElementById('rulesModalMsg');
+        if (rmMsg) rmMsg.textContent = msg;
+        if (rm) rm.style.display = 'flex';
+        var copyBtn = document.getElementById('copyRulesBtn');
+        if (copyBtn) copyBtn.onclick = function(){
+          var rt = document.getElementById('rulesText');
+          if (rt && navigator.clipboard) navigator.clipboard.writeText(rt.textContent).then(function(){ alert('Rules disalin ke clipboard.'); }).catch(function(){ alert('Gagal menyalin ke clipboard. Silakan salin manual.'); });
+        };
+        var closeBtn = document.getElementById('closeRulesBtn');
+        if (closeBtn) closeBtn.onclick = function(){ if (rm) rm.style.display = 'none'; };
+      } catch(e){ console.warn('rules modal wiring error', e); }
+      // fallback alert as well
       alert(msg);
     });
   }
