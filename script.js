@@ -310,7 +310,15 @@ onReady(function(){
   var userRaw = localStorage.getItem('bs_user');
   var userRaw = localStorage.getItem('bs_user');
   if (!userRaw) {
-    // create a guest siswa for convenience/testing so quiz and latihan UI are accessible
+    // Force the user to register/login via modal (no guest fallback)
+    try {
+      if (typeof showAuthModal === 'function') {
+        showAuthModal();
+        // stop further initialization — modal will reload page after login
+        return;
+      }
+    } catch(e){}
+    // If modal is not available for some reason, fall back to guest (rare)
     var guest = { name: 'Tamu', role: 'siswa' };
     localStorage.setItem('bs_user', JSON.stringify(guest));
     userRaw = localStorage.getItem('bs_user');
@@ -327,12 +335,15 @@ onReady(function(){
   }
   var guruArea = document.getElementById('guruWorksheet');
   var siswaArea = document.getElementById('siswaWorksheet');
+  var latihanUploadCard = document.getElementById('latihanUploadCard');
   if (role === 'guru') {
     if (guruArea) guruArea.style.display = 'block';
     if (siswaArea) siswaArea.style.display = 'none';
+    if (latihanUploadCard) latihanUploadCard.style.display = 'block';
   } else {
     if (guruArea) guruArea.style.display = 'none';
     if (siswaArea) siswaArea.style.display = 'block';
+    if (latihanUploadCard) latihanUploadCard.style.display = 'none';
   }
 
   // Wire Unggah button: guru mengunggah file untuk siswa

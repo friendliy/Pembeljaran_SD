@@ -352,6 +352,14 @@ header{
   background:linear-gradient(90deg,#f6fbff 0%, #e0e7ff 100%);
   padding:24px 32px; display:flex; align-items:center; justify-content:space-between; gap:12px; border-bottom:2px solid var(--border);
 }
+.brand { display:flex; align-items:center; gap:12px }
+header nav { margin-left:auto; display:flex; gap:24px; align-items:center }
+
+/* Pin nav to top-right on wider screens for clearer placement */
+@media (min-width: 700px) {
+  header { position: relative; }
+  header nav { position: absolute; right: 24px; top: 24px; }
+}
 .brand{display:flex; align-items:center; gap:12px}
 .logo{
   width:56px; height:56px; display:grid; place-items:center; background:var(--accent); color:#fff; border-radius:16px; font-weight:700; font-size:2rem; box-shadow:0 2px 8px rgba(43,140,255,0.12);
